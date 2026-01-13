@@ -41,9 +41,12 @@ https://ninjamock.com/s/2GX9QZx
 
 ### Key features
 
-- Describe your key feature
-- Describe your key feature
-- Describe your key feature
+- Secure login over HTTPS
+- Ability to decide between a 15 second and a 30 second timed typing test
+- Ability to add friends and see their stats (best WPM & accuracy)
+- Ability to see your own stats (total tests taken, best WPM & accuracy in 15 sec and 30 sec categories as well as average WPM and accuracy)
+- Global leaderboard (best WPM / accuracy for 15 sec & 30 sec categories)
+- Ability to change the color scheme
 
 ### Technologies
 
