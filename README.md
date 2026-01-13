@@ -25,7 +25,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ### Elevator pitch
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Have you ever wondered how you could improve your typing skills in a fun, simplistic way? That's exactly what Typing Test does for you! You can choose between a 15 and 30 second typing test, see your best and average scores, add friends and see their scores, and see the global leaderboard. Within no time at all, you'll see a huge improvement in your typing speed and accuracy.
 
 ### Design
 
