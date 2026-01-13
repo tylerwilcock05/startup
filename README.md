@@ -52,12 +52,12 @@ https://ninjamock.com/s/2GX9QZx
 
 I am going to use the required technologies in the following ways.
 
-- **HTML** - Description here
-- **CSS** - Description here
-- **React** - Description here
-- **Service** - Description here
-- **DB/Login** - Description here
-- **WebSocket** - Description here
+- **HTML** - Provides the structure of the website (text, links, images, several pages, etc...)
+- **CSS** - Provides the styling of the page as well as the cursor that will move as you type
+- **React** - Provides login and the interactivity (typing keys, pushing buttons, etc...)
+- **Service** - Endpoints for authentication, storing/retrieving scores.
+- **DB/Login** - Register and login users. Credentials securely stored in database. Also used to store scores and high scores
+- **WebSocket** - Users are notified of friend requests and are notified if their friend broke their high score or if a global high score was broken
 
 ## 🚀 AWS deliverable
 
