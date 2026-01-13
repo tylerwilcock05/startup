@@ -16,7 +16,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ### Elevator pitch
 
-Have you ever wondered how you could improve your typing skills in a fun, simplistic way? That's exactly what Typing Test does for you! You can choose between a 15 and 30 second typing test, see your best and average scores, add friends and see their scores, and see the global leaderboard. Within no time at all, you'll see a huge improvement in your typing speed and accuracy.
+Have you ever wondered how you could improve your typing skills in a fun, simplistic way? That's exactly what Typing Test does for you! You can choose between a 15 and 30 second typing test, see your best and average scores, add friends and see their scores, and see the global leaderboard. Aim to be the fastest typer in the world! Within no time at all, you'll see a huge improvement in your typing speed and accuracy.
 
 ### Design
 
