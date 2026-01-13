@@ -29,10 +29,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 ### Design
 
-![Design image](Design - Main Page.png)
-![Design image](Design - Friend Page.png)
-![Design image](Design - Stat Page.png)
-![Design image](Design - Leaderboard.png)
+![Main Page](MainPage.png)
+![Friend Page](FriendPage.png)
+![Stat Page](StatPage.png)
+![Leaderboard](Leaderboard.png)
 
 Here's my design
 https://ninjamock.com/s/2GX9QZx
