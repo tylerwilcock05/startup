@@ -29,6 +29,7 @@ Have you ever wondered how you could improve your typing skills in a fun, simpli
 
 ### Design
 
+![Login](Login.png)
 ![Main Page](MainPage.png)
 ![Friend Page](FriendPage.png)
 ![Stat Page](StatPage.png)
