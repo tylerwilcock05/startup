@@ -28,7 +28,6 @@ Have you ever wondered how you could improve your typing skills in a fun, simpli
 
 Here's my design
 https://ninjamock.com/s/2GX9QZx
-```
 
 ### Key features
 
