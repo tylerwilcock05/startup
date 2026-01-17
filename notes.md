@@ -10,8 +10,12 @@
 
 ## AWS
 
-My IP address is: 54.81.96.130
-Launching my AMI I initially put it on a private subnet. Even though it had a public IP address and the security group was right, I wasn't able to connect to it.
+My IP address is: 13.217.130.52
+
+This is the command to remote shell into my server
+ssh -i ~/Downloads/Gibberish.pem ubuntu@13.217.130.52
+
+
 
 ## Caddy
 
