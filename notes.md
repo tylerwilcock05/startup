@@ -76,6 +76,56 @@ I also used SVG to make the icon and logo for the app. This turned out to be a p
 
 Setting up Vite and React was pretty simple. I had a bit of trouble because of conflicting CSS. This isn't as straight forward as you would find with Svelte or Vue, but I made it work in the end. If there was a ton of CSS it would be a real problem. It sure was nice to have the code structured in a more usable way.
 
+<meta 
+      name="viewport"
+      content="width=device-width, initial-scale=1"      
+/>
+aside {
+      float: right;
+      padding: 3em;
+      margin: 0.5em;
+      border: black solid thin;
+}
+name {
+      none
+      block
+      display: inline
+      flex
+      display: grid
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-auto-rows: 300px
+      grid-gap: 1em
+}
+
+nth-child(even), nth-child(odd)
+
+container {
+      display: flex;
+}
+
+item {
+      flex: 0 0 50px; /--> grow, shrink, basis
+}
+
+@media (orientation: portrait) {
+      div {
+            transform: rotate(270deg);
+      }
+}
+
+Bootstrap
+<head>
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+</head>
+
+<body>
+ <button type="button">Plain</button>
+ <button type="button" class="btn btn-outline-primary">Bootstrap</button>
+
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+
 ## React Part 2: Reactivity
 
 This was a lot of fun to see it all come together. I had to keep remembering to use React state instead of just manipulating the DOM directly.
