@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Tell browsers not to scale the viewport automatically -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cracked Typer HTML</title>
+    <link rel="icon" href="favicon.ico" />
+  </head>
+  <body>
+    <!-- Use header, main, and footer elements to give semantic structure -->
+    <header>
+      <h1>Cracked Typer<sup>&reg;</sup></h1>
+
+      <!-- Navigation elements -->
+      <nav>
+        <!-- Menu is a semantic alternative to <ul> that represents an interaction -->
+        <menu>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="play.html">Play</a></li>
+          <li><a href="my-stats.html">My Stats</a></li>
+          <li><a href="leaderboard.html">Leaderboard</a></li>
+        </menu>
+      </nav>
+
+      <!-- Since we don't have the ability to style we use old style HTML to give some visual formatting -->
+      <hr />
+    </header>
+
+    <main>
+      <div class="players">
+        Player:
+        <span class="player-name">Mystery player</span>
+      </div>
+      <ul class="notification">
+        <li class="player-name">Tim got a new personal best: 100WPM - 97%</li>
+        <li class="player-name">Ada scored in the global leaderboard: 120WPM - 98%</li>
+        <li class="player-name">James requested to be your friend</li>
+        <li class="player-name">Hailey accepted your friend request</li>
+      </ul>
+
+      <!-- More formatting with old style HTML -->
+      <br />
+
+      <div>
+        <input type="radio" id="15 sec" name="toggle">
+        <label for="option1">15 seconds</label>
+
+        <input type="radio" id="30 sec" name="toggle" checked>
+        <label for="option2">30 seconds</label>
+
+      <br />
+      <br />
+
+      </div>
+
+      <div>
+        <p id="prompt">The quick brown fox jumps over the lazy dog.</p>
+        <label for="userInput">Start typing:</label>
+        <br />
+        <textarea id="userInput" rows="4" cols="50" placeholder="Type the sentence above here..."></textarea>
+      </div>
+      
+      <br />
+
+      <div>
+        <button>Restart</button>
+      </div>
+
+      <br />
+
+    </main>
+
+    <footer>
+      <hr />
+      <span class="text-reset">Author Name(s)</span>
+      <br />
+      <a href="https://github.com/tylerwilcock05/startup">GitHub</a>
+    </footer>
+  </body>
+</html>
