@@ -5,12 +5,13 @@
     <!-- Tell browsers not to scale the viewport automatically -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cracked Typer HTML</title>
-    <link rel="icon" href="favicon.ico" />
+    <link rel="icon" href="keyboard.webp" />
   </head>
   <body>
     <!-- Use header, main, and footer elements to give semantic structure -->
     <header>
       <h1>Cracked Typer<sup>&reg;</sup></h1>
+      <img src="keyboard.webp" width="7%" height="3.5%"/>
 
       <!-- Navigation elements -->
       <nav>
@@ -19,6 +20,7 @@
           <li><a href="index.html">Home</a></li>
           <li><a href="play.html">Play</a></li>
           <li><a href="my-stats.html">My Stats</a></li>
+          <li><a href="my-friends.html">My Friends</a></li>
           <li><a href="leaderboard.html">Leaderboard</a></li>
         </menu>
       </nav>
@@ -30,13 +32,12 @@
     <main>
       <div class="players">
         Player:
-        <span class="player-name">Mystery player</span>
+        <span class="player-name">UsernameOfPlayer</span>
       </div>
       <ul class="notification">
         <li class="player-name">Tim got a new personal best: 100WPM - 97%</li>
         <li class="player-name">Ada scored in the global leaderboard: 120WPM - 98%</li>
-        <li class="player-name">James requested to be your friend</li>
-        <li class="player-name">Hailey accepted your friend request</li>
+        <li class="player-name">James added you as a friend</li>
       </ul>
 
       <!-- More formatting with old style HTML -->
@@ -44,13 +45,13 @@
 
       <div>
         <input type="radio" id="15 sec" name="toggle">
-        <label for="option1">15 seconds</label>
+        <label for="15 sec">15 seconds</label>
 
         <input type="radio" id="30 sec" name="toggle" checked>
-        <label for="option2">30 seconds</label>
+        <label for="30 sec">30 seconds</label>
 
         <input type="radio" id="60 sec" name="toggle">
-        <label for="option3">60 seconds</label>
+        <label for="60 sec">60 seconds</label>
 
         <br />
         <br />
@@ -58,7 +59,7 @@
       </div>
 
       <div>
-        <p id="prompt">The quick brown fox jumps over the lazy dog.</p>
+        <p id="prompt">The quick brown fox jumps over the lazy dog. (third party service call to get random common english words)</p>
         <label for="userInput">30 secs (remaining)</label>
         <br />
         <textarea id="userInput" rows="4" cols="50" placeholder="Type the sentence above here..."></textarea>
@@ -67,7 +68,7 @@
       <br />
 
       <div>
-        <button>Restart</button>
+        <a href="play.html"><button>Try Again</button></a>
       </div>
 
       <br />
@@ -76,7 +77,7 @@
       <h2>Your Results (will appear after typing)</h2>
       <p>Words per minute: ___</p>
       <p>Accuracy: ___%</p>
-      <button>Try Again</button>
+      <a href="play.html"><button>Try Again</button></a>
 
     </main>
 
@@ -85,6 +86,8 @@
       <span class="text-reset">Author Name(s)</span>
       <br />
       <a href="https://github.com/tylerwilcock05/startup">GitHub</a>
+      <br />
+      <button>Change color scheme</button>
     </footer>
   </body>
 </html>

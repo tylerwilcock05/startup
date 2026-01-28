@@ -2,7 +2,7 @@
 
 [My Notes](notes.md)
 
-This is a description. I'm going to test to see if it links to Github
+Cracked Typer is a typing test where you can improve your skills, compare them to others, and connect to friends
 
 ## 🚀 Specification Deliverable
 
@@ -16,7 +16,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 ### Elevator pitch
 
-Have you ever wondered how you could improve your typing skills in a fun, simplistic way? That's exactly what Typing Test does for you! You can choose between a 15 and 30 second typing test, see your best and average scores, add friends and see their scores, and see the global leaderboard. Aim to be the fastest typer in the world! Within no time at all, you'll see a huge improvement in your typing speed and accuracy.
+Have you ever wondered how you could improve your typing skills in a fun, simplistic way? That's exactly what Typing Test does for you! You can choose between a 15, 30 and 60 second test, see your best and average scores, add friends and see their scores, and see the global leaderboard. Aim to be the fastest typer in the world! Within no time at all, you'll see a huge improvement in your typing speed and accuracy.
 
 ### Design
 
@@ -32,11 +32,11 @@ https://ninjamock.com/s/2GX9QZx
 ### Key features
 
 - Secure login over HTTPS
-- Ability to decide between a 15 second and a 30 second timed typing test
+- Ability to decide between a 15, 30, or 60 second timed typing test
 - Ability to add friends and see their stats (best WPM & accuracy)
 - Notification when a friend beats his/her high score and notification when a global high score is beaten
-- Ability to see your own stats (total tests taken, best WPM & accuracy in 15 sec and 30 sec categories as well as average WPM and accuracy)
-- Global leaderboard (best WPM / accuracy for 15 sec & 30 sec categories)
+- Ability to see your own stats (total tests taken, best WPM & accuracy in 15, 30, and 60 sec categories as well as average WPM and accuracy)
+- Global leaderboard (best WPM / accuracy for 15, 30, and 60 sec categories)
 - Ability to change the color scheme
 
 ### Technologies
@@ -46,7 +46,7 @@ I am going to use the required technologies in the following ways.
 - **HTML** - Provides the structure of the website (text, links, images, several pages, etc...)
 - **CSS** - Provides the styling of the page as well as the cursor that will move as you type
 - **React** - Provides login and the interactivity (typing keys, pushing buttons, etc...)
-- **Service** - Endpoints for authentication, storing/retrieving scores.
+- **Service** - Endpoints for authentication, storing/retrieving scores. Third party call to get random english words
 - **DB/Login** - Register and login users. Credentials securely stored in database. Also used to store scores and high scores
 - **WebSocket** - Users are notified of friend requests and are notified if their friend broke their high score or if a global high score was broken
 
@@ -54,21 +54,21 @@ I am going to use the required technologies in the following ways.
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Server deployed and accessible with custom domain name** - [My server link](https://yourdomainnamehere.click).
+- [x] **Server deployed and accessible with custom domain name** - [My server link](https://crackedtyper.click).
 
 ## 🚀 HTML deliverable
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **HTML pages** - I did not complete this part of the deliverable.
-- [ ] **Proper HTML element usage** - I did not complete this part of the deliverable.
-- [ ] **Links** - I did not complete this part of the deliverable.
-- [ ] **Text** - I did not complete this part of the deliverable.
-- [ ] **3rd party API placeholder** - I did not complete this part of the deliverable.
-- [ ] **Images** - I did not complete this part of the deliverable.
-- [ ] **Login placeholder** - I did not complete this part of the deliverable.
-- [ ] **DB data placeholder** - I did not complete this part of the deliverable.
-- [ ] **WebSocket placeholder** - I did not complete this part of the deliverable.
+- [x] **HTML pages** - 5 different pages: index.html (login), play.html, my-stats.html, my-friends.html, leaderboard.html
+- [x] **Proper HTML element usage** - I used many html tags including <html>, <header>, <main>, <footer>, <head>, <title>, <link>, <body>, <p>, <a>, <input>, <img>, <table>, <textarea>, <li>, <button>, and many more
+- [x] **Links** - There are links between pages
+- [x] **Text** - There's text on the my stats page
+- [x] **3rd party API placeholder** - I put text on the play page to say that I was going to do a 3rd party service call to get random common english words
+- [x] **Images** - I put an image of a keyboard on each page in the header
+- [x] **Login placeholder** - Placeholder for auth on the login page.
+- [x] **DB data placeholder** - High scores displayed on leaderboard page.
+- [x] **WebSocket placeholder** - The play page has a text area that will show what other user notifications.
 
 ## 🚀 CSS deliverable
 
