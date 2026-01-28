@@ -91,13 +91,13 @@ Here's some stuff I learned in class
         name="viewport"
         content="width=device-width, initial-scale=1"      
   />
-  aside {
+  .aside {
         float: right;
         padding: 3em;
         margin: 0.5em;
         border: black solid thin;
   }
-  name {
+  .name {
         none
         block
         display: inline
@@ -108,13 +108,13 @@ Here's some stuff I learned in class
         grid-gap: 1em
   }
 
-  nth-child(even), nth-child(odd)
+  .nth-child(even), nth-child(odd)
 
-  container {
+  .container {
         display: flex;
   }
 
-  item {
+  .item {
         flex: 0 0 50px; /--> grow, shrink, basis
   }
 
