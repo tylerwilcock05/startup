@@ -29,6 +29,14 @@ The part I didn't like was the duplication of the header and footer code. This i
 
 ## CSS
 
+How to hook up css to html:
+
+```html
+      <head>
+        <link rel="stylesheet" href="style.css"></link>
+      </head>
+```
+
 This took a couple hours to get it how I wanted. It was important to make it responsive and Bootstrap helped with that. It looks great on all kinds of screen sizes.
 
 Bootstrap seems a bit like magic. It styles things nicely, but is very opinionated. You either do, or you do not. There doesn't seem to be much in between.
@@ -76,55 +84,58 @@ I also used SVG to make the icon and logo for the app. This turned out to be a p
 
 Setting up Vite and React was pretty simple. I had a bit of trouble because of conflicting CSS. This isn't as straight forward as you would find with Svelte or Vue, but I made it work in the end. If there was a ton of CSS it would be a real problem. It sure was nice to have the code structured in a more usable way.
 
-<meta 
-      name="viewport"
-      content="width=device-width, initial-scale=1"      
-/>
-aside {
-      float: right;
-      padding: 3em;
-      margin: 0.5em;
-      border: black solid thin;
-}
-name {
-      none
-      block
-      display: inline
-      flex
-      display: grid
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      grid-auto-rows: 300px
-      grid-gap: 1em
-}
+Here's some stuff I learned in class
 
-nth-child(even), nth-child(odd)
+```html
+  <meta 
+        name="viewport"
+        content="width=device-width, initial-scale=1"      
+  />
+  aside {
+        float: right;
+        padding: 3em;
+        margin: 0.5em;
+        border: black solid thin;
+  }
+  name {
+        none
+        block
+        display: inline
+        flex
+        display: grid
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-auto-rows: 300px
+        grid-gap: 1em
+  }
 
-container {
-      display: flex;
-}
+  nth-child(even), nth-child(odd)
 
-item {
-      flex: 0 0 50px; /--> grow, shrink, basis
-}
+  container {
+        display: flex;
+  }
 
-@media (orientation: portrait) {
-      div {
-            transform: rotate(270deg);
-      }
-}
+  item {
+        flex: 0 0 50px; /--> grow, shrink, basis
+  }
 
-Bootstrap
-<head>
- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
-</head>
+  @media (orientation: portrait) {
+        div {
+              transform: rotate(270deg);
+        }
+  }
 
-<body>
- <button type="button">Plain</button>
- <button type="button" class="btn btn-outline-primary">Bootstrap</button>
+  Bootstrap
+  <head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  </head>
 
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+  <body>
+  <button type="button">Plain</button>
+  <button type="button" class="btn btn-outline-primary">Bootstrap</button>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+```
 
 ## React Part 2: Reactivity
 
