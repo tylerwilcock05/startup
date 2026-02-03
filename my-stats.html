@@ -6,28 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cracked Typer HTML</title>
     <link rel="icon" href="keyboard.webp" />
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="my-stats.css" />
+
+    <!-- Include bootstrap CSS framework -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+      crossorigin="anonymous"
+    />
   </head>
-  <body>
-    <!-- Use header, main, and footer elements to give semantic structure -->
-    <header>
-      <h1>Cracked Typer<sup>&reg;</sup></h1>
-      <img src="keyboard.webp" width="7%" height="3.5%"/>
-
-      <!-- Navigation elements -->
-      <nav>
-        <!-- Menu is a semantic alternative to <ul> that represents an interaction -->
-        <menu>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="play.html">Play</a></li>
-          <li><a href="my-stats.html">My Stats</a></li>
-          <li><a href="my-friends.html">My Friends</a></li>
-          <li><a href="leaderboard.html">Leaderboard</a></li>
-        </menu>
-      </nav>
-
-      <!-- Since we don't have the ability to style we use old style HTML to give some visual formatting -->
-      <hr />
-    </header>
+  <body class="bg-dark text-light">
+        <!-- Use header, main, and footer elements to give semantic structure -->
+        <header class="container-fluid custom-layout">
+            <!-- Navigation elements -->
+            <nav class="navbar fixed-top navbar-dark bg-dark">
+                <!-- Menu is a semantic alternative to <ul> that represents an interaction -->
+                <div class="container-fluid">
+                    <menu class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link title-menu" href="index.html"><b>Cracked Typer</b></a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="play.html">Play</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="my-stats.html">My Stats</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="my-friends.html">My Friends</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="leaderboard.html">Leaderboard</a></li>
+                    </menu>
+                </div>
+            </nav>
+        </header>
 
     <main>
         <div class="players">
@@ -131,7 +142,7 @@
       <hr />
       <span class="text-reset">Tyler Wilcock</span>
       <br />
-      <a href="https://github.com/tylerwilcock05/startup">GitHub</a>
+      <a class="text-reset" href="https://github.com/tylerwilcock05/startup">GitHub</a>
       <br />
       <button>Change color scheme</button>
     </footer>
