@@ -61,7 +61,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [x] **HTML pages** - 5 different pages: index.html (login), play.html, my-stats.html, my-friends.html, leaderboard.html
-- [x] **Proper HTML element usage** - I used many html tags including <html>, <header>, <main>, <footer>, <head>, <title>, <link>, <body>, <p>, <a>, <input>, <img>, <table>, <textarea>, <li>, <button>, and many more
+- [x] **Proper HTML element usage** - I used many html tags including html, header, main, footer, head, title, link, body, p, a, input, img, table, textarea, li, button, and many more
 - [x] **Links** - There are links between pages
 - [x] **Text** - There's text on the my stats page
 - [x] **3rd party API placeholder** - I put text on the play page to say that I was going to do a 3rd party service call to get random common english words
@@ -74,12 +74,12 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Visually appealing colors and layout. No overflowing elements.** - I did not complete this part of the deliverable.
-- [ ] **Use of a CSS framework** - I did not complete this part of the deliverable.
-- [ ] **All visual elements styled using CSS** - I did not complete this part of the deliverable.
-- [ ] **Responsive to window resizing using flexbox and/or grid display** - I did not complete this part of the deliverable.
-- [ ] **Use of a imported font** - I did not complete this part of the deliverable.
-- [ ] **Use of different types of selectors including element, class, ID, and pseudo selectors** - I did not complete this part of the deliverable.
+- [x] **Visually appealing colors and layout. No overflowing elements.** - I did not complete this part of the deliverable.
+- [x] **Use of a CSS framework** - I did not complete this part of the deliverable.
+- [x] **All visual elements styled using CSS** - I did not complete this part of the deliverable.
+- [x] **Responsive to window resizing using flexbox and/or grid display** - I did not complete this part of the deliverable.
+- [x] **Use of a imported font** - I did not complete this part of the deliverable.
+- [x] **Use of different types of selectors including element, class, ID, and pseudo selectors** - I did not complete this part of the deliverable.
 
 ## 🚀 React part 1: Routing deliverable
 
