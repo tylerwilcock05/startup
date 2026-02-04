@@ -1,108 +1,57 @@
-body {
-  display: flex;
-  flex-direction: column;
-  min-width: 375px;
+h2 {
+  margin-top: 1.5rem;
+  color: rgb(118, 190, 210);
 }
 
-header {
-  flex: 0 80px;
-  height: 80px;
+input[type="text"] {
+  padding: 0.4em 0.8em;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background: #23272b;
+  color: #f8f9fa;
+  margin-right: 0.5em;
 }
 
-main {
-  flex: 1 calc(100vh - 110px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
+button {
+  padding: 0.4em 1em;
+  border-radius: 4px;
+  border: none;
+  background: rgb(118, 190, 210);
+  color: #181818;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+  margin-bottom: 1em;
+}
+button:hover {
+  background: #fff;
+  color: #181818;
 }
 
-footer {
-  flex: 0 30px;
+table {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 2rem auto;
+  background: #222;
+  color: #f8f9fa;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+}
+thead {
+  background: #23272b;
+}
+th, td {
+  padding: 0.7em 0.5em;
+  border: 1px solid #444;
+}
+th {
+  color: rgb(118, 190, 210);
+  font-weight: bold;
+}
+tr:nth-child(even) {
+  background: #23272b;
+}
+tr:hover {
+  background: #2c2f34;
 }
 
-menu {
-  flex: 1;
-  display: flex;
-  /*  overwrite Bootstrap so the menu does not wrap */
-  flex-direction: row !important;
-  list-style: none;
-}
-
-.navbar-brand {
-  padding-left: 0.3em;
-  border-bottom: solid rgb(182, 182, 182) thin;
-}
-
-menu .nav-item {
-  padding: 0 0.3em;
-}
-
-footer a {
-  float: right;
-  padding: 0.3em;
-  
-}
-
-@media (max-height: 600px) {
-  header {
-    display: none;
-  }
-  footer {
-    display: none;
-  }
-  main {
-    flex: 1 100vh;
-  }
-}
-
-/* Ensure navbar items (including the title) are vertically centered */
-.navbar .container-fluid {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-menu.navbar-nav {
-  align-items: center;
-}
-
-.navbar .nav-link {
-  display: flex;
-  align-items: center;
-}
-
-.title-menu{
-  font-size: xx-large !important;
-  color: rgb(118, 190, 210) !important;
-  padding-right: .3em !important;
-}
-
-/* Force navbar and nav items to fill header height and center vertically */
-.navbar {
-  height: 80px;
-  padding-top: 0;
-  padding-bottom: 0;
-  display: flex;
-  align-items: center;
-}
-
-.navbar .container-fluid {
-  height: 100%;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-menu.navbar-nav {
-  height: 100%;
-  display: flex;
-  align-items: center;
-}
-
-.navbar .nav-link {
-  padding: 0 .5rem;
-  height: 100%;
-  display: flex;
-  align-items: center;
-}
