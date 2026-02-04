@@ -30,19 +30,43 @@ menu {
   list-style: none;
 }
 
-.navbar-brand {
-  padding-left: 0.3em;
-  border-bottom: solid rgb(182, 182, 182) thin;
-}
-
 menu .nav-item {
   padding: 0 0.3em;
 }
 
-footer a {
-  float: right;
+/* Footer layout: use flexbox so items align and space consistently */
+footer,
+footer > .container-fluid {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* keep items left-to-right, we'll push the group to the right */
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  width: 100%;
+}
+
+/* Footer links and buttons: remove floats and use consistent styling */
+footer a,
+footer button {
+  float: none !important;
+  margin: 0;
   padding: 0.3em;
-  
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+footer a:hover,
+footer button:hover {
+  color: rgb(200, 200, 200) !important;
+}
+
+
+/* Use a helper class to push the right-side group to the far right */
+.push-right {
+  margin-left: auto;
 }
 
 @media (max-height: 600px) {
@@ -106,3 +130,16 @@ menu.navbar-nav {
   display: flex;
   align-items: center;
 }
+
+/* Style footer button to match navbar links */
+footer button {
+  background: none;
+  border: none;
+  color: rgb(146, 146, 146);
+  cursor: pointer;
+  padding: 0.3em;
+  transition: color 0.2s ease;
+  margin: 0;
+}
+
+/* end footer rules */
