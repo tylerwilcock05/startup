@@ -191,3 +191,47 @@ button.btn:hover {
   background: #fff;
   color: #181818;
 }
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .stats-tables-row, .friends-table-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .stats-table-col, .friends-table-col {
+    min-width: 0;
+    width: 100%;
+  }
+  table {
+    font-size: 0.95em;
+  }
+}
+
+@media (max-width: 600px) {
+  header, footer {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  main, .container-fluid {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .title-menu {
+    font-size: 1.2em !important;
+  }
+  table, th, td {
+    font-size: 0.9em;
+    padding: 0.4em 0.2em;
+  }
+  .stats-summary-row, .results-row {
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .time-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  button, input, .input-group-text {
+    font-size: 1em;
+  }
+}
