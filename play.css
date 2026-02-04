@@ -5,7 +5,7 @@
 .players {
   flex: 1;
   width: 100%;
-  padding: 0.5em;
+  padding-left: 1rem;
 }
 
 .player-name {
@@ -118,3 +118,37 @@
   transform: translateX(-50%) translateY(-50%);
 }
 
+/* Style radio button group as button toggles */
+input[type="radio"] {
+  display: none;
+}
+
+label[for="15 sec"],
+label[for="30 sec"],
+label[for="60 sec"] {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+  background-color: rgb(50, 50, 50);
+  color: rgb(200, 200, 200);
+  border: 2px solid rgb(100, 100, 100);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+label[for="15 sec"]:hover,
+label[for="30 sec"]:hover,
+label[for="60 sec"]:hover {
+  background-color: rgb(70, 70, 70);
+  border-color: rgb(118, 190, 210);
+}
+
+input[type="radio"][id="15 sec"]:checked + label[for="15 sec"],
+input[type="radio"][id="30 sec"]:checked + label[for="30 sec"],
+input[type="radio"][id="60 sec"]:checked + label[for="60 sec"] {
+  background-color: rgb(118, 190, 210);
+  color: rgb(0, 0, 0);
+  border-color: rgb(118, 190, 210);
+}
