@@ -1,3 +1,31 @@
+/* Table styles to match my-friends */
+table {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 2rem auto;
+  background: #222;
+  color: #f8f9fa;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+}
+thead {
+  background: #23272b;
+}
+th, td {
+  padding: 0.7em 0.5em;
+  border: 1px solid #444;
+}
+th {
+  color: rgb(118, 190, 210);
+  font-weight: bold;
+}
+tr:nth-child(even) {
+  background: #23272b;
+}
+tr:hover {
+  background: #2c2f34;
+}
 .players {
   color: rgb(146, 146, 146);
   font-size: 1.2rem;
