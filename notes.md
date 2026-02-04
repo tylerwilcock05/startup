@@ -162,3 +162,27 @@ Handling the toggling of the checkboxes was particularly interesting.
   ))}
 </div>
 ```
+## Javascript
+
+const msg = "Hello world";
+
+console.log('Hello' + ' ' + 'world')
+
+document.body.innerTextd
+
+function join(a, b) {
+  return a + ' ' + b;
+}
+
+const words = ['hello', 'world'];
+
+words.forEach((word) => console.log(word))
+
+let i = 0;
+
+document.body.innerHTML = "h1 id='count' />"
+setInterval(() => {
+  const el = document.querySelector('#count');
+  el.innerHTML = 'Count: ${i++}'
+}, 1000)
+
