@@ -27,7 +27,6 @@ footer {
 menu {
   flex: 1;
   display: flex;
-  /*  overwrite Bootstrap so the menu does not wrap */
   flex-direction: row !important;
   list-style: none;
 }
@@ -36,18 +35,16 @@ menu .nav-item {
   padding: 0 0.3em;
 }
 
-/* Footer layout: use flexbox so items align and space consistently */
 footer,
 footer > .container-fluid {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* keep items left-to-right, we'll push the group to the right */
+  justify-content: flex-start; 
   gap: 1rem;
   padding: 0.5rem 1rem;
   width: 100%;
 }
 
-/* Footer links and buttons: remove floats and use consistent styling */
 footer a,
 footer button {
   float: none !important;
@@ -65,8 +62,6 @@ footer button:hover {
   color: rgb(200, 200, 200) !important;
 }
 
-
-/* Use a helper class to push the right-side group to the far right */
 .push-right {
   margin-left: auto;
 }
@@ -83,7 +78,6 @@ footer button:hover {
   }
 }
 
-/* Ensure navbar items (including the title) are vertically centered */
 .navbar .container-fluid {
   display: flex;
   align-items: center;
@@ -106,7 +100,6 @@ menu.navbar-nav {
   padding-right: .3em !important;
 }
 
-/* Force navbar and nav items to fill header height and center vertically */
 .navbar {
   height: 100px;
   padding-top: 0px !important;
@@ -134,7 +127,6 @@ menu.navbar-nav {
   align-items: center;
 }
 
-/* Style footer button to match navbar links */
 footer button {
   background: none;
   border: none;
@@ -145,7 +137,6 @@ footer button {
   margin: 0;
 }
 
-/* Login page form styling to match other pages */
 main form {
   background: #222;
   border-radius: 12px;
