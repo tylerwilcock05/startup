@@ -29,6 +29,21 @@ The part I didn't like was the duplication of the header and footer code. This i
 
 ## CSS
 
+## CSS/Styling Notes: What I Learned
+
+- Use flexbox on body and main to keep the footer at the bottom of the page, even with little content.
+- Use `min-height: 100vh` on body for full viewport height layouts.
+- Use `flex: 1` on main to fill available space between header and footer.
+- Use `align-items: center` and `justify-content: center` to center content vertically and horizontally.
+- Use more specific selectors and `!important` to override Bootstrap.
+- I can use radio inputs and style their labels as toggle buttons.
+- Use `margin-bottom` and `gap` to control spacing between rows and elements.
+- Use `border-radius` for rounded buttons.
+- Remove Bootstrap table classes if you want only your custom table style to apply.
+- Use `padding-left` and remove `flex: 1`/`width: 100%` to control alignment and whitespace in flex containers.
+- Use a single CSS file for shared styles, and page-specific CSS for overrides or unique layouts.
+- Always check for inline styles or Bootstrap utility classes that may override your custom CSS.
+
 How to hook up css to html:
 
 ```html
@@ -36,6 +51,22 @@ How to hook up css to html:
         <link rel="stylesheet" href="style.css"></link>
       </head>
 ```
+
+```css
+.class {
+
+}
+
+#id {
+
+}
+
+input[type="radio"] {
+  
+}
+
+```
+
 
 This took a couple hours to get it how I wanted. It was important to make it responsive and Bootstrap helped with that. It looks great on all kinds of screen sizes.
 
@@ -185,4 +216,5 @@ setInterval(() => {
   const el = document.querySelector('#count');
   el.innerHTML = 'Count: ${i++}'
 }, 1000)
+````
 
