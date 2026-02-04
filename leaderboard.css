@@ -1,0 +1,105 @@
+/* Center radio button rows and add spacing */
+.leaderboard-radio-row {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+/* Radio button group as button toggles (match play page) */
+input[type="radio"] {
+	display: none;
+}
+
+label[for="15 sec"],
+label[for="30 sec"],
+label[for="60 sec"],
+label[for="friends"],
+label[for="everyone"] {
+	display: inline-block;
+	padding: 0.2rem 0.6rem;
+	margin-right: 1rem;
+	background-color: rgb(50, 50, 50);
+	color: rgb(200, 200, 200);
+	border: 2px solid rgb(100, 100, 100);
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-weight: 500;
+	font-size: 0.95em;
+}
+
+label[for="15 sec"]:hover,
+label[for="30 sec"]:hover,
+label[for="60 sec"]:hover,
+label[for="friends"]:hover,
+label[for="everyone"]:hover {
+	background-color: rgb(70, 70, 70);
+	border-color: rgb(118, 190, 210);
+}
+
+input[type="radio"][id="15 sec"]:checked + label[for="15 sec"],
+input[type="radio"][id="30 sec"]:checked + label[for="30 sec"],
+input[type="radio"][id="60 sec"]:checked + label[for="60 sec"],
+input[type="radio"][id="friends"]:checked + label[for="friends"],
+input[type="radio"][id="everyone"]:checked + label[for="everyone"] {
+	background-color: rgb(118, 190, 210);
+	color: rgb(0, 0, 0);
+	border-color: rgb(118, 190, 210);
+}
+h2 {
+	margin-top: 1.5rem;
+	color: rgb(118, 190, 210);
+}
+
+input[type="text"] {
+	padding: 0.4em 0.8em;
+	border-radius: 4px;
+	border: 1px solid #444;
+	background: #23272b;
+	color: #f8f9fa;
+	margin-right: 0.5em;
+}
+
+button {
+	padding: 0.4em 1em;
+	border-radius: 4px;
+	border: none;
+	background: rgb(118, 190, 210);
+	color: #181818;
+	font-weight: 500;
+	transition: background 0.2s, color 0.2s;
+	margin-bottom: 1em;
+}
+button:hover {
+	background: #fff;
+	color: #181818;
+}
+
+table {
+	width: 100%;
+	max-width: 900px;
+	margin: 0 auto 2rem auto;
+	background: #222;
+	color: #f8f9fa;
+	border-collapse: collapse;
+	border-radius: 8px;
+	overflow: hidden;
+}
+thead {
+	background: #23272b;
+}
+th, td {
+	padding: 0.7em 0.5em;
+	border: 1px solid #444;
+}
+th {
+	color: rgb(118, 190, 210);
+	font-weight: bold;
+}
+tr:nth-child(even) {
+	background: #23272b;
+}
+tr:hover {
+	background: #2c2f34;
+}
+
