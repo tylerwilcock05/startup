@@ -27,6 +27,11 @@ button:hover {
   color: #181818;
 }
 
+/* Add friend button: slightly rounded corners */
+button:not(td button) {
+  border-radius: 8px;
+}
+
 table {
   width: 100%;
   max-width: 900px;
@@ -53,5 +58,21 @@ tr:nth-child(even) {
 }
 tr:hover {
   background: #2c2f34;
+}
+
+/* Smaller, rounded Remove buttons */
+td button {
+  padding: 0.2em 0.7em;
+  border-radius: 20px;
+  font-size: 0.95em;
+  background: rgb(195, 69, 69);
+  color: #181818;
+  border: none;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+td button:hover {
+  background: #fff;
+  color: #181818;
 }
 

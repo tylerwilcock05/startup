@@ -8,7 +8,7 @@
   padding-left: 1rem;
   color: rgb(146, 146, 146);
   opacity: 0.6;
-  
+
   
 }
 
@@ -187,4 +187,27 @@ input[type="radio"][id="60 sec"]:checked + label[for="60 sec"] {
   color: rgb(118, 190, 210);
   font-size: 2em;
   margin-bottom: 0em;
+}
+
+.restart {
+    text-align: center;
+    padding-top: 1rem;
+    color: rgb(146, 146, 146);
+    font-size: 1em;
+}
+
+.results {
+    text-align: center;
+    padding-top: 1rem;
+    color: rgb(118, 190, 210);
+    font-size: 1.2em;
+}
+
+/* Results row styling */
+.results-row {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.2rem;
 }

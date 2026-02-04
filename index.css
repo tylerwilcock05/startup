@@ -142,4 +142,49 @@ footer button {
   margin: 0;
 }
 
-/* end footer rules */
+/* Login page form styling to match other pages */
+main form {
+  background: #222;
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  margin: 2rem auto;
+  max-width: 400px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+}
+main h1 {
+  color: rgb(118, 190, 210);
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
+}
+.input-group-text {
+  background: #23272b;
+  color: rgb(118, 190, 210);
+  border: none;
+  font-size: 1.1em;
+}
+input.form-control[type="text"],
+input.form-control[type="password"] {
+  background: #23272b;
+  color: rgb(118, 190, 210);
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 0.5em 1em;
+}
+button.btn {
+  padding: 0.4em 1em;
+  border-radius: 8px;
+  border: none;
+  background: rgb(118, 190, 210);
+  color: #181818;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+  margin: 0.5em 0.5em 0 0;
+}
+button.btn-secondary {
+  background: #23272b;
+  color: rgb(118, 190, 210);
+}
+button.btn:hover {
+  background: #fff;
+  color: #181818;
+}
