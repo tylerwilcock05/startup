@@ -2,6 +2,7 @@ body {
   display: flex;
   flex-direction: column;
   min-width: 375px;
+  font-family: "Comic Sans MS", "Roboto Mono", Vazirmatn, monospace !important;
 }
 
 header {

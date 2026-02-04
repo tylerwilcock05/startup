@@ -48,37 +48,28 @@
           Player:
           <span class="player-name">UsernameOfPlayer</span>
           <ul class="notification">
-            <li class="player-name">Tim got a new personal best: 100WPM - 97%</li>
-            <li class="player-name">Ada scored in the global leaderboard: 120WPM - 98%</li>
-            <li class="player-name">James added you as a friend</li>
+            <li class="player-messages">Tim got a new personal best: 100WPM - 97%</li>
+            <li class="player-messages">Ada scored in the global leaderboard: 120WPM - 98%</li>
+            <li class="player-messages">James added you as a friend</li>
           </ul>
         </div>
-      </div>
-      
+        <div class="time-buttons">
+          <input type="radio" id="15 sec" name="toggle" checked>
+          <label for="15 sec">15s</label>
 
-      <!-- More formatting with old style HTML -->
-      <br />
+          <input type="radio" id="30 sec" name="toggle">
+          <label for="30 sec">30s</label>
 
-      <div>
-        <input type="radio" id="15 sec" name="toggle">
-        <label for="15 sec">15 seconds</label>
-
-        <input type="radio" id="30 sec" name="toggle" checked>
-        <label for="30 sec">30 seconds</label>
-
-        <input type="radio" id="60 sec" name="toggle">
-        <label for="60 sec">60 seconds</label>
-
-        <br />
-        <br />
-
+          <input type="radio" id="60 sec" name="toggle">
+          <label for="60 sec">60s</label>
+        </div>
       </div>
 
-      <div>
-        <p id="prompt">The quick brown fox jumps over the lazy dog. (third party service call to get random common english words)</p>
-        <label for="userInput">30 secs (remaining)</label>
+      <div class="container-fluid">
+        <p class="countdown">30</p>
+        <h1 class="typing-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</h1>
+        
         <br />
-        <textarea id="userInput" rows="4" cols="50" placeholder="Type the sentence above here..."></textarea>
       </div>
       
       <br />
