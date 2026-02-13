@@ -1,3 +1,7 @@
+.my-stats {
+  margin-top: 4.5em;
+}
+
 /* Table styles to match my-friends and leaderboard */
 table {
     width: 100%;
@@ -27,12 +31,22 @@ table {
     background: #2c2f34;
   }
 
-.players {
-  color: rgb(146, 146, 146);
-  font-size: 1.2rem;
-  margin-bottom: 0 !important;
-  flex-grow: 0 !important;
+.username {
+  color: rgb(118, 190, 210) !important;
+  font-size: 1.2rem !important;
+  margin-bottom: 3em !important;
 }
+
+.player-text {
+  color: rgb(146, 146, 146) !important;
+  
+}
+
+.player-username {
+  
+  margin-left: 0.5rem !important;
+}
+
 .stats-summary-row {
   display: flex;
   flex-direction: row;

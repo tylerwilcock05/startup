@@ -7,7 +7,7 @@ export function Play() {
       <div className="container-fluid">
         <div className="players">
           Player:
-          <span className="player-name">UsernameOfPlayer</span>
+          <span className="player-name"> UsernameOfPlayer</span>
           <ul className="notification">
             <li className="player-messages">Tim got a new personal best: 100WPM - 97%</li>
             <li className="player-messages">Ada scored in the global leaderboard: 120WPM - 98%</li>

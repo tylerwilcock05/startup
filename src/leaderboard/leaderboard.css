@@ -1,3 +1,7 @@
+.leaderboard {
+	margin-top: 3em;
+}
+
 /* Center radio button rows and add spacing */
 .leaderboard-radio-row {
 	display: flex;

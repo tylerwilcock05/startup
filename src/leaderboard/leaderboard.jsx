@@ -4,7 +4,7 @@ import './leaderboard.css';
 
 export function Leaderboard() {
   return (
-      <main>
+      <main class="leaderboard">
         <h2>Global Leaderboard</h2>
         <div className="leaderboard-radio-row">
           <input type="radio" id="15 sec" name="seconds" />

@@ -9,8 +9,10 @@ import { MyFriends } from './my-friends/my-friends';
 import { MyStats } from './my-stats/my-stats';
 
 export default function App() {
+    // Determine if current route is play
+    const isPlayPage = window.location.pathname === '/play';
     return (
-        <div className="body bg-dark text-light">
+      <div className={`body bg-dark text-light`}>
         <header className="container-fluid custom-layout">
           <nav className="navbar fixed-top navbar-dark bg-dark">
             <div className="container-fluid">
@@ -53,5 +55,5 @@ export default function App() {
   }
 
   function NotFound() {
-    return <main className="container-fluid bg-secondary text-center">404: Return to sender. Address unknown.</main>;
+    return <main className="container-fluid bg-dark text-center justify-content-center text-secondary">404: Return to sender. Address unknown.</main>;
   }

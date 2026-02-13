@@ -4,10 +4,10 @@ import './my-stats.css';
 
 export function MyStats() {
   return (
-    <main className="container-fluid bg-dark text-center">
-          <div className="players">
-              <strong className="players">Player:</strong>
-              <span className="player-name"><strong>UsernameOfPlayer</strong></span>
+    <main className="my-stats container-fluid bg-dark text-center">
+          <div className="username">
+              <strong className="player-text">Player:</strong>
+              <span className="player-username"><strong>UsernameOfPlayer</strong></span>
           </div>
           <div className="stats-summary-row">
               <div className="stats-summary-col">Total Tests Completed: 15</div>

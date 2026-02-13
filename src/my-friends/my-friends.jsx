@@ -3,7 +3,7 @@ import './my-friends.css';
 
 export function MyFriends() {
   return (
-      <main>
+      <main class="my-friends">
         <h2>Friends</h2>
         <input type="text" id="friendName" name="friendName" placeholder="Enter username of friend" />
         <button>Add friend</button>
