@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import './my-stats.css';
 
 export function MyStats() {
   return (

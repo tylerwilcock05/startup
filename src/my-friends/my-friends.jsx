@@ -1,5 +1,6 @@
 import { Browser } from 'puppeteer';
 import React from 'react';
+import './my-friends.css';
 
 export function MyFriends() {
   return (
