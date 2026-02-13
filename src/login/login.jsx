@@ -1,5 +1,5 @@
 import React from 'react';
-import '/startup/app.css';
+import './app.css';
 
 export function Login() {
   return (
