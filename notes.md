@@ -168,6 +168,10 @@ Here's some stuff I learned in class
   </body>
 ```
 
+I also learned how to change several html files to one file using react
+
+
+
 ## React Part 2: Reactivity
 
 This was a lot of fun to see it all come together. I had to keep remembering to use React state instead of just manipulating the DOM directly.
