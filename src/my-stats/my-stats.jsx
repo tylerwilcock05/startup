@@ -4,20 +4,19 @@ import './my-stats.css';
 
 export function MyStats() {
   return (
-    <BrowserRouter>
-      <main className="container-fluid bg-dark text-center">
-            <div className="players">
-                <strong className="players">Player:</strong>
-                <span className="player-name"><strong>UsernameOfPlayer</strong></span>
-            </div>
-            <div className="stats-summary-row">
-                <div className="stats-summary-col">Total Tests Completed: 15</div>
-                <div className="stats-summary-col">Average WPM: 72</div>
-                <div className="stats-summary-col">Best WPM: 104</div>
-                <div className="stats-summary-col">Average Accuracy: 94%</div>
-            </div>
-                        <div className="stats-tables-row">
-                            <div className="stats-table-col">
+    <main className="container-fluid bg-dark text-center">
+          <div className="players">
+              <strong className="players">Player:</strong>
+              <span className="player-name"><strong>UsernameOfPlayer</strong></span>
+          </div>
+          <div className="stats-summary-row">
+              <div className="stats-summary-col">Total Tests Completed: 15</div>
+              <div className="stats-summary-col">Average WPM: 72</div>
+              <div className="stats-summary-col">Best WPM: 104</div>
+              <div className="stats-summary-col">Average Accuracy: 94%</div>
+          </div>
+                      <div className="stats-tables-row">
+                          <div className="stats-table-col">
                                 <h3 className="table-header">Best 15 seconds</h3>
                                 <table>
                                     <thead>
@@ -107,6 +106,5 @@ export function MyStats() {
             </div>
 
     </main>
-    </BrowserRouter>
   );
 }

@@ -1,10 +1,8 @@
-import { Browser } from 'puppeteer';
 import React from 'react';
 import './my-friends.css';
 
 export function MyFriends() {
   return (
-    <BrowserRouter>
       <main>
         <h2>Friends</h2>
         <input type="text" id="friendName" name="friendName" placeholder="Enter username of friend" />
@@ -73,6 +71,5 @@ export function MyFriends() {
         </tbody>
       </table>
     </main>
-    </BrowserRouter>
   );
 }

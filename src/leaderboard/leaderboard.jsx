@@ -4,7 +4,6 @@ import './leaderboard.css';
 
 export function Leaderboard() {
   return (
-    <BrowserRouter>
       <main>
         <h2>Global Leaderboard</h2>
         <div className="leaderboard-radio-row">
@@ -59,6 +58,5 @@ export function Leaderboard() {
           </tbody>
         </table>
       </main>
-    </BrowserRouter>
   );
 }

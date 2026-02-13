@@ -10,26 +10,26 @@ import { MyStats } from './my-stats/my-stats';
 
 export default function App() {
     return (
-      <div className="body bg-dark text-light">
-        <header class="container-fluid custom-layout">
-            <nav class="navbar fixed-top navbar-dark bg-dark">
-                <div class="container-fluid">
-                    <menu class="navbar-nav">
-                        <li class="nav-item">
-                        <NavLink class="nav-link title-menu" to="play.html"><b>Cracked Typer</b></NavLink></li>
-                        <li class="nav-item">
-                        <NavLink class="nav-link" to="play.html">Play</NavLink></li>
-                        <li class="nav-item">
-                        <NavLink class="nav-link" to="my-stats.html">My Stats</NavLink></li>
-                        <li class="nav-item">
-                        <NavLink class="nav-link" to="my-friends.html">My Friends</NavLink></li>
-                        <li class="nav-item">
-                        <NavLink class="nav-link" to="leaderboard.html">Leaderboard</NavLink></li>
-                        <li class="nav-item push-right">
-                        <NavLink class="nav-link active" to="index.html">Login</NavLink></li>
-                    </menu>
-                </div>
-            </nav>
+        <div className="body bg-dark text-light">
+        <header className="container-fluid custom-layout">
+          <nav className="navbar fixed-top navbar-dark bg-dark">
+            <div className="container-fluid">
+              <menu className="navbar-nav">
+                <li className="nav-item">
+                <NavLink className="nav-link title-menu" to="/play"><b>Cracked Typer</b></NavLink></li>
+                <li className="nav-item">
+                <NavLink className="nav-link" to="/play">Play</NavLink></li>
+                <li className="nav-item">
+                <NavLink className="nav-link" to="/stats">My Stats</NavLink></li>
+                <li className="nav-item">
+                <NavLink className="nav-link" to="/friends">My Friends</NavLink></li>
+                <li className="nav-item">
+                <NavLink className="nav-link" to="/leaderboard">Leaderboard</NavLink></li>
+                <li className="nav-item push-right">
+                <NavLink className="nav-link active" to="/">Login</NavLink></li>
+              </menu>
+            </div>
+          </nav>
         </header>
   
         <Routes>
@@ -41,11 +41,11 @@ export default function App() {
             <Route path='*' element={<NotFound />} />
         </Routes>
   
-        <footer class="bg-dark text-white-50 container-fluid py-3">
-            <div class="container-fluid"> 
-                <span class="text-reset">Tyler Wilcock</span>
-                <button class="footer push-right">Change color scheme</button>
-                <NavLink class="text-reset" to="https://github.com/tylerwilcock05/startup">GitHub</NavLink>
+        <footer className="bg-dark text-white-50 container-fluid py-3">
+            <div className="container-fluid"> 
+                <span className="text-reset">Tyler Wilcock</span>
+                <button className="footer push-right">Change color scheme</button>
+                <NavLink className="text-reset" to="https://github.com/tylerwilcock05/startup">GitHub</NavLink>
             </div>
     </footer>
       </div>

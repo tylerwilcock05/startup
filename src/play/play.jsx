@@ -3,8 +3,7 @@ import './play.css';
 
 export function Play() {
   return (
-    <BrowserRouter>
-      <main>
+    <main>
       <div className="container-fluid">
         <div className="players">
           Player:
@@ -42,7 +41,5 @@ export function Play() {
       </div>
 
     </main>
-    </BrowserRouter>
-    
   );
 }
