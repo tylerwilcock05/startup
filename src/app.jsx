@@ -28,7 +28,7 @@ export default function App() {
                 <li className="nav-item">
                 <NavLink className="nav-link" to="/leaderboard">Leaderboard</NavLink></li>
                 <li className="nav-item push-right">
-                <NavLink className="nav-link active" to="/">Login</NavLink></li>
+                <NavLink className="nav-link" to="/">Login</NavLink></li>
               </menu>
             </div>
           </nav>
