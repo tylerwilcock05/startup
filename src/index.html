@@ -1,68 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <!-- Tell browsers not to scale the viewport automatically -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cracked Typer HTML</title>
-    <link rel="icon" href="keyboard.webp" />
-    <link rel="stylesheet" href="index.css" />
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
 
-    <!-- Include bootstrap CSS framework -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
-      crossorigin="anonymous"
-    />
+    <title>Simon React</title>
   </head>
-  <body class="bg-dark text-light">
-    <!-- Use header, main, and footer elements to give semantic structure -->
-    <header class="container-fluid custom-layout">
-      <!-- Navigation elements -->
-      <nav class="navbar fixed-top navbar-dark bg-dark">
-        <!-- Menu is a semantic alternative to <ul> that represents an interaction -->
-        <div class="container-fluid">
-          <menu class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link title-menu" href="play.html"><b>Cracked Typer</b></a></li>
-            <li class="nav-item">
-              <a class="nav-link" href="play.html">Play</a></li>
-            <li class="nav-item">
-              <a class="nav-link" href="my-stats.html">My Stats</a></li>
-            <li class="nav-item">
-              <a class="nav-link" href="my-friends.html">My Friends</a></li>
-            <li class="nav-item">
-              <a class="nav-link" href="leaderboard.html">Leaderboard</a></li>
-            <li class="nav-item push-right">
-              <a class="nav-link active" href="index.html">Login</a></li>
-          </menu>
-        </div>
-      </nav>
-    </header>
-
-    <main class="container-fluid bg-dark text-center">
-      <h1>Welcome to Cracked Typer!</h1>
-      <form method="get" action="play.html">
-        <div class="input-group mb-3">
-          <span class="input-group-text">@</span>
-          <input class="form-control" type="text" placeholder="your@email.com" />
-        </div>
-        <div class="input-group mb-3">
-          <span class="input-group-text">🔒</span>
-          <input class="form-control" type="password" placeholder="password" />
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-        <button type="submit" class="btn btn-secondary">Create</button>
-      </form>
-    </main>
-
-    <footer class="bg-dark text-white-50 container-fluid py-3">
-      <div class="container-fluid"> 
-        <span class="text-reset">Tyler Wilcock</span>
-        <button class="footer push-right">Change color scheme</button>
-        <a class="text-reset" href="https://github.com/tylerwilcock05/startup">GitHub</a>
-      </div>
-    </footer>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/index.jsx"></script>
   </body>
 </html>

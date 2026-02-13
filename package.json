@@ -30,6 +30,9 @@
     "picocolors": "^1.1.1",
     "picomatch": "^4.0.3",
     "postcss": "^8.5.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.0",
     "rollup": "^4.57.1",
     "source-map-js": "^1.2.1",
     "tinyglobby": "^0.2.15"
