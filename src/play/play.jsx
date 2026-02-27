@@ -27,10 +27,15 @@ export function Play({ onHideChrome }) {
   const [cursorPos, setCursorPos] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
+  // Track all errors ever made (not decremented on backspace)
+  const [totalIncorrect, setTotalIncorrect] = useState(0);
   const [selectedTime, setSelectedTime] = useState(30);
   const [countdown, setCountdown] = useState(30);
   const [timerStarted, setTimerStarted] = useState(false);
   const [timerActive, setTimerActive] = useState(true);
+  // Results
+  const [wpm, setWpm] = useState(null);
+  const [accuracy, setAccuracy] = useState(null);
   const timerRef = useRef(null);
   const typingAreaRef = useRef(null);
 
@@ -53,11 +58,28 @@ export function Play({ onHideChrome }) {
       timerRef.current = setTimeout(() => {
         setCountdown((c) => c - 1);
       }, 1000);
-    } else if (countdown === 0) {
+    } else if (timerStarted && countdown === 0 && timerActive) {
       setTimerActive(false);
     }
     return () => clearTimeout(timerRef.current);
-  }, [timerStarted, countdown, timerActive]);
+  }, [timerStarted, countdown]);
+
+  // Calculate WPM and accuracy only once when timer ends
+  useEffect(() => {
+    if (!timerActive && timerStarted && countdown === 0) {
+      const totalCorrect = correctCount;
+      let minutes = 1;
+      if (selectedTime === 15) minutes = 0.25;
+      else if (selectedTime === 30) minutes = 0.5;
+      else if (selectedTime === 60) minutes = 1;
+      const wpmCalc = totalCorrect > 0 ? ((totalCorrect / 5) / minutes) : 0;
+      // Use totalIncorrect for all-time errors
+      const denominator = totalCorrect + totalIncorrect;
+      const accuracyCalc = denominator > 0 ? (totalCorrect / denominator) * 100 : 0;
+      setWpm(Math.round(wpmCalc));
+      setAccuracy(Math.round(accuracyCalc));
+    }
+  }, [timerActive, timerStarted, countdown, correctCount, totalIncorrect, selectedTime]);
 
   // Handle radio input change
   const handleTimeChange = (e) => {
@@ -68,6 +90,9 @@ export function Play({ onHideChrome }) {
     setTimerActive(true);
     setTyped([]);
     setCursorPos(0);
+    setCorrectCount(0);
+    setIncorrectCount(0);
+    setTotalIncorrect(0);
     // Refocus typing area so user can type immediately
     setTimeout(() => {
       if (typingAreaRef.current) typingAreaRef.current.focus();
@@ -83,6 +108,7 @@ export function Play({ onHideChrome }) {
       setCursorPos(0);
       setCorrectCount(0);
       setIncorrectCount(0);
+      setTotalIncorrect(0);
       setCountdown(selectedTime);
       setTimerStarted(false);
       setTimerActive(true);
@@ -111,6 +137,7 @@ export function Play({ onHideChrome }) {
           setCorrectCount((c) => c + 1);
         } else {
           setIncorrectCount((c) => c + 1);
+          setTotalIncorrect((c) => c + 1);
         }
         setCursorPos((pos) => pos + 1);
       }
@@ -126,6 +153,7 @@ export function Play({ onHideChrome }) {
               setCorrectCount((c) => Math.max(0, c - 1));
             } else {
               setIncorrectCount((c) => Math.max(0, c - 1));
+              // Do NOT decrement totalIncorrect
             }
           }
           newTyped[cursorPos - 1] = undefined;
@@ -382,10 +410,18 @@ export function Play({ onHideChrome }) {
           <div>
             <p className="restart">Press Tab to restart</p>
           </div>
-
           <div className="results-row">
-            <p className="results">Words per minute: ___</p>
-            <p className="results">Accuracy: ___%</p>
+            {(!timerActive || countdown === 0) && wpm !== null && accuracy !== null ? (
+              <>
+                <p className="results">Words per minute: {wpm}</p>
+                <p className="results">Accuracy: {accuracy}%</p>
+              </>
+            ) : (
+              <>
+                <p className="results">Words per minute: ___</p>
+                <p className="results">Accuracy: ___%</p>
+              </>
+            )}
           </div>
         </>
       )}
