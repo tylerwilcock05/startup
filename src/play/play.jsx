@@ -364,9 +364,141 @@ export function Play({ onHideChrome }) {
     // Only run when hideAll changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hideAll]);
+  // Show results if timer is done, results are available, and not yet reset
+  const [showResults, setShowResults] = React.useState(false);
+  useEffect(() => {
+    if (!timerActive && timerStarted && wpm !== null && accuracy !== null) {
+      setShowResults(true);
+    }
+  }, [timerActive, timerStarted, wpm, accuracy]);
+
+  // When Tab is pressed to restart, reset all state and hide results
+  const handleRestart = () => {
+    setShowResults(false);
+    setTyped([]);
+    setCursorPos(0);
+    setCorrectCount(0);
+    setIncorrectCount(0);
+    setTotalIncorrect(0);
+    setCountdown(selectedTime);
+    setTimerStarted(false);
+    setTimerActive(true);
+    setWpm(null);
+    setAccuracy(null);
+    // Refocus typing area after a short delay to ensure UI is reset
+    setTimeout(() => {
+      if (typingAreaRef.current) typingAreaRef.current.focus();
+    }, 50);
+  };
+
+  // Use a single handleKeyDown for all logic, always resetting showResults and all state on Tab
+  const handleKeyDownUnified = (e) => {
+    if (e.key === 'Tab') {
+      console.log('[DEBUG] Tab pressed. showResults:', showResults, 'timerActive:', timerActive, 'timerStarted:', timerStarted, 'countdown:', countdown);
+      e.preventDefault();
+      setShowResults(false);
+      setTyped([]);
+      setCursorPos(0);
+      setCorrectCount(0);
+      setIncorrectCount(0);
+      setTotalIncorrect(0);
+      setCountdown(selectedTime);
+      setTimerStarted(false);
+      setTimerActive(true);
+      setWpm(null);
+      setAccuracy(null);
+      setTimeout(() => {
+        if (typingAreaRef.current) typingAreaRef.current.focus();
+        console.log('[DEBUG] State after reset:', {
+          showResults,
+          typed: [],
+          cursorPos: 0,
+          correctCount: 0,
+          incorrectCount: 0,
+          totalIncorrect: 0,
+          countdown: selectedTime,
+          timerStarted: false,
+          timerActive: true,
+          wpm: null,
+          accuracy: null
+        });
+      }, 50);
+      return;
+    }
+    if (!timerActive) {
+      console.log('[DEBUG] Key ignored because timer is not active.');
+      return;
+    }
+    if (!timerStarted && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      setTimerStarted(true);
+      console.log('[DEBUG] Timer started.');
+    }
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      if (cursorPos < fullText.length) {
+        setTyped((prev) => {
+          const newTyped = [...prev];
+          newTyped[cursorPos] = e.key;
+          return newTyped;
+        });
+        if (e.key === fullText[cursorPos]) {
+          setCorrectCount((c) => c + 1);
+        } else {
+          setIncorrectCount((c) => c + 1);
+          setTotalIncorrect((c) => c + 1);
+        }
+        setCursorPos((pos) => pos + 1);
+        console.log('[DEBUG] Typed:', e.key, 'cursorPos:', cursorPos + 1);
+      }
+      e.preventDefault();
+    } else if (e.key === 'Backspace') {
+      if (cursorPos > 0) {
+        setTyped((prev) => {
+          const newTyped = [...prev];
+          const prevChar = newTyped[cursorPos - 1];
+          if (prevChar !== undefined) {
+            if (prevChar === fullText[cursorPos - 1]) {
+              setCorrectCount((c) => Math.max(0, c - 1));
+            } else {
+              setIncorrectCount((c) => Math.max(0, c - 1));
+            }
+          }
+          newTyped[cursorPos - 1] = undefined;
+          return newTyped;
+        });
+        setCursorPos((pos) => pos - 1);
+        console.log('[DEBUG] Backspace. cursorPos:', cursorPos - 1);
+      }
+      e.preventDefault();
+    }
+  };
+
+  // Attach document-level keydown for Tab when results are showing
+  useEffect(() => {
+    if (!showResults) return;
+    const docTabHandler = (e) => {
+      if (e.key === 'Tab') {
+        console.log('[DEBUG] (doc) Tab pressed while results showing.');
+        handleKeyDownUnified(e);
+      }
+    };
+    const forceResetHandler = () => {
+      if (showResults) {
+        console.log('[DEBUG] play-force-reset event received.');
+        handleKeyDownUnified({ key: 'Tab', preventDefault: () => {} });
+      }
+    };
+    document.addEventListener('keydown', docTabHandler);
+    window.addEventListener('play-force-reset', forceResetHandler);
+    return () => {
+      document.removeEventListener('keydown', docTabHandler);
+      window.removeEventListener('play-force-reset', forceResetHandler);
+    };
+  }, [showResults]);
+
   return (
     <main>
-      {!hideAll && (
+      {/* Show chrome only if not typing and not showing results */}
+      {!hideAll && !showResults && (
         <>
           <div className="container-fluid">
             <div className="players">
@@ -393,37 +525,40 @@ export function Play({ onHideChrome }) {
       )}
 
       <div className="container-fluid">
-        <p className="countdown">{countdown}</p>
-        <div
-          className="typing-text"
-          tabIndex={0}
-          ref={typingAreaRef}
-          onKeyDown={handleKeyDown}
-          style={{ outline: 'none', cursor: 'none' }}
-        >
-          {visibleLines.map(renderLine)}
-        </div>
+        {/* Hide countdown when results are displayed */}
+        {!showResults && <p className="countdown">{countdown}</p>}
+        {/* Typing text only visible while timer is running and not showing results */}
+        {timerActive && !showResults ? (
+          <div
+            className="typing-text"
+            tabIndex={0}
+            ref={typingAreaRef}
+            onKeyDown={handleKeyDownUnified}
+            style={{ outline: 'none', cursor: 'none' }}
+          >
+            {visibleLines.map(renderLine)}
+          </div>
+        ) : null}
       </div>
 
-      {!hideAll && (
-        <>
-          <div>
-            <p className="restart">Press Tab to restart</p>
-          </div>
-          <div className="results-row">
-            {(!timerActive || countdown === 0) && wpm !== null && accuracy !== null ? (
-              <>
-                <p className="results">Words per minute: {wpm}</p>
-                <p className="results">Accuracy: {accuracy}%</p>
-              </>
-            ) : (
-              <>
-                <p className="results">Words per minute: ___</p>
-                <p className="results">Accuracy: ___%</p>
-              </>
-            )}
-          </div>
-        </>
+      {/* Show results centered only after timer ends and before Tab is pressed */}
+      {showResults && (
+        <div className="results-row" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '30vh' }}>
+          <p className="results" style={{ fontSize: '2em', margin: '0em 0 0 0', color: '#888' }}>
+            Words per minute: <span style={{ color: 'rgb(118, 190, 210)' }}>{wpm}</span>
+          </p>
+          <p className="results" style={{ fontSize: '2em', margin: '-1em 0 0 0', color: '#888' }}>
+            Accuracy: <span style={{ color: 'rgb(118, 190, 210)' }}>{accuracy}%</span>
+          </p>
+          <p className="restart" style={{ textAlign: 'center', fontSize: '1.2em', marginTop: '2em' }}>Press Tab to restart</p>
+        </div>
+      )}
+
+      {/* Show restart text always when not typing or when results are shown */}
+      {!hideAll && !showResults && (
+        <div>
+          <p className="restart">Press Tab to restart</p>
+        </div>
       )}
     </main>
   );

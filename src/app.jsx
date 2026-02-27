@@ -39,12 +39,15 @@ export default function App() {
                 className={`nav-link title-menu${hideChrome ? ' title-menu-grey' : ''}`}
                 to="/play"
                 style={{ zIndex: 1001, position: 'relative' }}
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('play-force-reset'));
+                }}
               >
                 <b>Cracked Typer</b>
               </NavLink>
               </li>
               <li className="nav-item">
-              <NavLink className="nav-link" to="/play">Play</NavLink></li>
+              <NavLink className="nav-link" to="/play" onClick={() => { window.dispatchEvent(new CustomEvent('play-force-reset')); }}>Play</NavLink></li>
               <li className="nav-item">
               <NavLink className="nav-link" to="/stats">My Stats</NavLink></li>
               <li className="nav-item">
