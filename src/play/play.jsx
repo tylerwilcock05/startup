@@ -16,6 +16,11 @@ export function Play() {
   // Store all user input, including wrong letters
   const [typed, setTyped] = useState([]); // array of chars
   const [cursorPos, setCursorPos] = useState(0);
+  const [selectedTime, setSelectedTime] = useState(30);
+  const [countdown, setCountdown] = useState(30);
+  const [timerStarted, setTimerStarted] = useState(false);
+  const [timerActive, setTimerActive] = useState(true);
+  const timerRef = useRef(null);
   const typingAreaRef = useRef(null);
 
   // Focus the typing area on mount
@@ -25,8 +30,42 @@ export function Play() {
     }
   }, []);
 
+  // Handle countdown timer
+  useEffect(() => {
+    if (timerStarted && timerActive && countdown > 0) {
+      timerRef.current = setTimeout(() => {
+        setCountdown((c) => c - 1);
+      }, 1000);
+    } else if (countdown === 0) {
+      setTimerActive(false);
+    }
+    return () => clearTimeout(timerRef.current);
+  }, [timerStarted, countdown, timerActive]);
+
+  // Handle radio input change
+  const handleTimeChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+    setSelectedTime(value);
+    setCountdown(value);
+    setTimerStarted(false);
+    setTimerActive(true);
+    setTyped([]);
+    setCursorPos(0);
+    // Refocus typing area so user can type immediately
+    setTimeout(() => {
+      if (typingAreaRef.current) typingAreaRef.current.focus();
+    }, 0);
+  };
+
   // Handle key presses
   const handleKeyDown = (e) => {
+    if (!timerActive) {
+      e.preventDefault();
+      return;
+    }
+    if (!timerStarted && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      setTimerStarted(true);
+    }
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
       // Only allow typing if not past the end
       if (cursorPos < fullText.length) {
@@ -172,19 +211,19 @@ export function Play() {
           </ul>
         </div>
         <div className="time-buttons">
-          <input type="radio" id="15 sec" name="toggle" defaultChecked />
+          <input type="radio" id="15 sec" name="toggle" value="15" checked={selectedTime === 15} onChange={handleTimeChange} />
           <label htmlFor="15 sec">15s</label>
 
-          <input type="radio" id="30 sec" name="toggle" />
+          <input type="radio" id="30 sec" name="toggle" value="30" checked={selectedTime === 30} onChange={handleTimeChange} />
           <label htmlFor="30 sec">30s</label>
 
-          <input type="radio" id="60 sec" name="toggle" />
+          <input type="radio" id="60 sec" name="toggle" value="60" checked={selectedTime === 60} onChange={handleTimeChange} />
           <label htmlFor="60 sec">60s</label>
         </div>
       </div>
 
       <div className="container-fluid">
-        <p className="countdown">30</p>
+        <p className="countdown">{countdown}</p>
         <div
           className="typing-text"
           tabIndex={0}
