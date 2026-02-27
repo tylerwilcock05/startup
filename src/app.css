@@ -1,3 +1,69 @@
+/* Make Cracked Typer title grey when typing (hideChrome) */
+.nav-link.title-menu.title-menu-grey,
+.nav-link.title-menu.title-menu-grey:visited,
+.nav-link.title-menu.title-menu-grey:active {
+  color: #888 !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
+body.hide-chrome header > *,
+body.hide-chrome footer > * {
+  visibility: hidden !important;
+}
+body.hide-chrome .title-menu,
+body.hide-chrome .title-menu * {
+  visibility: visible !important;
+}
+body header,
+body footer {
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+/* Remove position/z-index from header/footer, just use fixed height */
+body > header {
+  height: 100px;
+  min-height: 100px;
+  box-sizing: border-box;
+}
+body > footer {
+  height: 70px;
+  min-height: 70px;
+  box-sizing: border-box;
+}
+.body {
+  display: flex;
+  flex-direction: column;
+  min-width: 375px;
+  min-height: 100vh;
+  font-family: 'IBM Plex Mono', monospace !important;
+  height: 100vh;
+}
+header {
+  height: 100px;
+  min-height: 100px;
+  box-sizing: border-box;
+  flex: 0 0 100px;
+}
+main {
+  flex: 1 0 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  overflow-x: hidden;
+  gap: 2rem;
+  justify-content: center;
+}
+footer {
+  height: 70px;
+  min-height: 70px;
+  box-sizing: border-box;
+  flex: 0 0 70px;
+  width: 100vw;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
 .login {
   margin-top: 9em;
 }

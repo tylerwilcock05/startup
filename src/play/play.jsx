@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './play.css';
 
-export function Play() {
+export function Play({ onHideChrome }) {
   // In the future, replace this array with random words
   const words = [
     'Lorem', 'ipsum', 'dolor', 'sit', 'amet,', 'consectetur', 'adipiscing', 'elit,',
@@ -16,6 +16,8 @@ export function Play() {
   // Store all user input, including wrong letters
   const [typed, setTyped] = useState([]); // array of chars
   const [cursorPos, setCursorPos] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [incorrectCount, setIncorrectCount] = useState(0);
   const [selectedTime, setSelectedTime] = useState(30);
   const [countdown, setCountdown] = useState(30);
   const [timerStarted, setTimerStarted] = useState(false);
@@ -59,6 +61,11 @@ export function Play() {
 
   // Handle key presses
   const handleKeyDown = (e) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      window.location.reload();
+      return;
+    }
     if (!timerActive) {
       e.preventDefault();
       return;
@@ -74,6 +81,12 @@ export function Play() {
           newTyped[cursorPos] = e.key;
           return newTyped;
         });
+        // Update correct/incorrect counts
+        if (e.key === fullText[cursorPos]) {
+          setCorrectCount((c) => c + 1);
+        } else {
+          setIncorrectCount((c) => c + 1);
+        }
         setCursorPos((pos) => pos + 1);
       }
       e.preventDefault();
@@ -81,6 +94,15 @@ export function Play() {
       if (cursorPos > 0) {
         setTyped((prev) => {
           const newTyped = [...prev];
+          // Update correct/incorrect counts
+          const prevChar = newTyped[cursorPos - 1];
+          if (prevChar !== undefined) {
+            if (prevChar === fullText[cursorPos - 1]) {
+              setCorrectCount((c) => Math.max(0, c - 1));
+            } else {
+              setIncorrectCount((c) => Math.max(0, c - 1));
+            }
+          }
           newTyped[cursorPos - 1] = undefined;
           return newTyped;
         });
@@ -90,26 +112,93 @@ export function Play() {
     }
   };
 
-  // Split words into lines without breaking words, up to a max line length
-  const maxLineLength = 70; // adjust for your font/width
-  function getLinesFromWords(wordsArr, maxLen) {
-    const lines = [];
-    let currentLine = '';
-    for (let i = 0; i < wordsArr.length; i++) {
-      const word = wordsArr[i];
-      // +1 for space if not first word in line
-      const addLen = currentLine.length === 0 ? word.length : word.length + 1;
-      if (currentLine.length + addLen > maxLen) {
-        lines.push(currentLine);
-        currentLine = word;
-      } else {
-        currentLine += (currentLine.length === 0 ? '' : ' ') + word;
-      }
+  // --- Pixel-perfect word wrapping ---
+  const [lines, setLines] = useState([]);
+  // Recalculate lines after mount, resize, or words change
+  // --- DOM-based pixel-perfect word wrapping ---
+  useEffect(() => {
+    // Create a hidden span for accurate measurement
+    let measurer = document.getElementById('line-measurer');
+    if (!measurer) {
+      measurer = document.createElement('span');
+      measurer.id = 'line-measurer';
+      measurer.style.visibility = 'hidden';
+      measurer.style.position = 'absolute';
+      measurer.style.whiteSpace = 'pre';
+      measurer.style.pointerEvents = 'none';
+      measurer.style.zIndex = -1;
+      document.body.appendChild(measurer);
     }
-    if (currentLine.length > 0) lines.push(currentLine);
-    return lines;
-  }
-  const lines = getLinesFromWords(words, maxLineLength);
+    function getLinesFromWordsDOM(wordsArr, container) {
+      let pxWidth = window.innerWidth;
+      if (container) {
+        pxWidth = container.offsetWidth - 8;
+        const style = getComputedStyle(container);
+        measurer.style.font = style.font;
+        measurer.style.fontSize = style.fontSize;
+        measurer.style.fontFamily = style.fontFamily;
+        measurer.style.letterSpacing = style.letterSpacing;
+        measurer.style.wordSpacing = style.wordSpacing;
+        measurer.style.fontWeight = style.fontWeight;
+        measurer.style.lineHeight = style.lineHeight;
+        measurer.style.padding = style.padding;
+      }
+      const lines = [];
+      let currentLine = '';
+      for (let i = 0; i < wordsArr.length; i++) {
+        const word = wordsArr[i];
+        // If the word itself is too long, put it on its own line
+        measurer.textContent = word;
+        const wordWidth = measurer.offsetWidth;
+        if (wordWidth > pxWidth) {
+          if (currentLine.length > 0) {
+            lines.push(currentLine);
+            currentLine = '';
+          }
+          lines.push(word);
+          continue;
+        }
+        if (currentLine.length === 0) {
+          currentLine = word;
+        } else {
+          measurer.textContent = currentLine + ' ' + word;
+          const testWidth = measurer.offsetWidth;
+          if (testWidth > pxWidth) {
+            lines.push(currentLine);
+            currentLine = word;
+          } else {
+            currentLine += ' ' + word;
+          }
+        }
+      }
+      if (currentLine.length > 0) lines.push(currentLine);
+      return lines;
+    }
+    function recalcLines() {
+      setLines(getLinesFromWordsDOM(words, typingAreaRef.current));
+    }
+    recalcLines();
+    window.addEventListener('resize', recalcLines);
+    // Use ResizeObserver for container changes
+    let resizeObs = null;
+    if (typingAreaRef.current && window.ResizeObserver) {
+      resizeObs = new window.ResizeObserver(recalcLines);
+      resizeObs.observe(typingAreaRef.current);
+    }
+    // Use MutationObserver for font/style changes
+    let mutationObs = null;
+    if (typingAreaRef.current && window.MutationObserver) {
+      mutationObs = new window.MutationObserver(recalcLines);
+      mutationObs.observe(typingAreaRef.current, { attributes: true, attributeFilter: ['style', 'class'] });
+    }
+    return () => {
+      window.removeEventListener('resize', recalcLines);
+      if (resizeObs) resizeObs.disconnect();
+      if (mutationObs) mutationObs.disconnect();
+      if (measurer) measurer.remove();
+    };
+    // eslint-disable-next-line
+  }, [words]);
 
   // Map each character in lines to its index in fullText and precompute line start indices
   let runningIdx = 0;
@@ -198,29 +287,43 @@ export function Play() {
     return <div className="typing-line" key={lineIdx}>{chars}</div>;
   }
 
+  // Hide everything except typing area when timer is running
+  const hideAll = timerStarted && timerActive;
+  // Notify parent (App) to hide chrome
+  useEffect(() => {
+    const hide = timerStarted && timerActive;
+    window.dispatchEvent(new CustomEvent('play-hide-chrome', { detail: { hideChrome: hide } }));
+    if (onHideChrome) onHideChrome(hide);
+    // Only run when hideAll changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hideAll]);
   return (
     <main>
-      <div className="container-fluid">
-        <div className="players">
-          Player:
-          <span className="player-name"> UsernameOfPlayer</span>
-          <ul className="notification">
-            <li className="player-messages">Tim got a new personal best: 100WPM - 97%</li>
-            <li className="player-messages">Ada scored in the global leaderboard: 120WPM - 98%</li>
-            <li className="player-messages">James added you as a friend</li>
-          </ul>
-        </div>
-        <div className="time-buttons">
-          <input type="radio" id="15 sec" name="toggle" value="15" checked={selectedTime === 15} onChange={handleTimeChange} />
-          <label htmlFor="15 sec">15s</label>
+      {!hideAll && (
+        <>
+          <div className="container-fluid">
+            <div className="players">
+              Player:
+              <span className="player-name"> UsernameOfPlayer</span>
+              <ul className="notification">
+                <li className="player-messages">Tim got a new personal best: 100WPM - 97%</li>
+                <li className="player-messages">Ada scored in the global leaderboard: 120WPM - 98%</li>
+                <li className="player-messages">James added you as a friend</li>
+              </ul>
+            </div>
+            <div className="time-buttons">
+              <input type="radio" id="15 sec" name="toggle" value="15" checked={selectedTime === 15} onChange={handleTimeChange} />
+              <label htmlFor="15 sec">15s</label>
 
-          <input type="radio" id="30 sec" name="toggle" value="30" checked={selectedTime === 30} onChange={handleTimeChange} />
-          <label htmlFor="30 sec">30s</label>
+              <input type="radio" id="30 sec" name="toggle" value="30" checked={selectedTime === 30} onChange={handleTimeChange} />
+              <label htmlFor="30 sec">30s</label>
 
-          <input type="radio" id="60 sec" name="toggle" value="60" checked={selectedTime === 60} onChange={handleTimeChange} />
-          <label htmlFor="60 sec">60s</label>
-        </div>
-      </div>
+              <input type="radio" id="60 sec" name="toggle" value="60" checked={selectedTime === 60} onChange={handleTimeChange} />
+              <label htmlFor="60 sec">60s</label>
+            </div>
+          </div>
+        </>
+      )}
 
       <div className="container-fluid">
         <p className="countdown">{countdown}</p>
@@ -235,15 +338,18 @@ export function Play() {
         </div>
       </div>
 
-      <div>
-        <p className="restart">Press Tab to restart</p>
-      </div>
+      {!hideAll && (
+        <>
+          <div>
+            <p className="restart">Press Tab to restart</p>
+          </div>
 
-      <div className="results-row">
-        <p className="results">Words per minute: ___</p>
-        <p className="results">Accuracy: ___%</p>
-      </div>
-
+          <div className="results-row">
+            <p className="results">Words per minute: ___</p>
+            <p className="results">Accuracy: ___%</p>
+          </div>
+        </>
+      )}
     </main>
   );
 }
