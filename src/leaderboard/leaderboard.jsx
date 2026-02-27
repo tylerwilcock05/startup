@@ -3,8 +3,8 @@ import { BrowserRouter } from 'react-router-dom';
 import './leaderboard.css';
 
 export function Leaderboard() {
-  return (
-      <main class="leaderboard">
+    return (
+      <main className="leaderboard">
         <h2>Global Leaderboard</h2>
         <div className="leaderboard-radio-row">
           <input type="radio" id="15 sec" name="seconds" />

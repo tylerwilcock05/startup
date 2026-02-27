@@ -2,8 +2,8 @@ import React from 'react';
 import './my-friends.css';
 
 export function MyFriends() {
-  return (
-      <main class="my-friends">
+    return (
+      <main className="my-friends">
         <h2>Friends</h2>
         <input type="text" id="friendName" name="friendName" placeholder="Enter username of friend" />
         <button>Add friend</button>

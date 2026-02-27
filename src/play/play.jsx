@@ -2,6 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import './play.css';
 
 export function Play({ onHideChrome }) {
+  // Defensive: blur typing area only on unmount
+  useEffect(() => {
+    return () => {
+      if (typingAreaRef.current && document.body.contains(typingAreaRef.current)) {
+        typingAreaRef.current.blur();
+      }
+      console.log('[Play] Unmounted');
+    };
+  }, []);
   // In the future, replace this array with random words
   const words = [
     'Lorem', 'ipsum', 'dolor', 'sit', 'amet,', 'consectetur', 'adipiscing', 'elit,',
@@ -30,6 +39,12 @@ export function Play({ onHideChrome }) {
     if (typingAreaRef.current) {
       typingAreaRef.current.focus();
     }
+    return () => {
+      // Remove focus from typing area on unmount to avoid trapping navigation
+      if (typingAreaRef.current) {
+        typingAreaRef.current.blur();
+      }
+    };
   }, []);
 
   // Handle countdown timer
@@ -63,11 +78,21 @@ export function Play({ onHideChrome }) {
   const handleKeyDown = (e) => {
     if (e.key === 'Tab') {
       e.preventDefault();
-      window.location.reload();
+      // Reset all state to restart the typing test without reloading
+      setTyped([]);
+      setCursorPos(0);
+      setCorrectCount(0);
+      setIncorrectCount(0);
+      setCountdown(selectedTime);
+      setTimerStarted(false);
+      setTimerActive(true);
+      // Refocus typing area
+      setTimeout(() => {
+        if (typingAreaRef.current) typingAreaRef.current.focus();
+      }, 0);
       return;
     }
     if (!timerActive) {
-      e.preventDefault();
       return;
     }
     if (!timerStarted && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -116,19 +141,21 @@ export function Play({ onHideChrome }) {
   const [lines, setLines] = useState([]);
   // Recalculate lines after mount, resize, or words change
   // --- DOM-based pixel-perfect word wrapping ---
+  // Use a ref to persist the measurer element per Play instance
+  const measurerRef = useRef(null);
   useEffect(() => {
-    // Create a hidden span for accurate measurement
-    let measurer = document.getElementById('line-measurer');
-    if (!measurer) {
-      measurer = document.createElement('span');
-      measurer.id = 'line-measurer';
+    // Create a hidden span for accurate measurement, only once per Play instance
+    if (!measurerRef.current) {
+      const measurer = document.createElement('span');
       measurer.style.visibility = 'hidden';
       measurer.style.position = 'absolute';
       measurer.style.whiteSpace = 'pre';
       measurer.style.pointerEvents = 'none';
       measurer.style.zIndex = -1;
       document.body.appendChild(measurer);
+      measurerRef.current = measurer;
     }
+    const measurer = measurerRef.current;
     function getLinesFromWordsDOM(wordsArr, container) {
       let pxWidth = window.innerWidth;
       if (container) {
@@ -175,7 +202,16 @@ export function Play({ onHideChrome }) {
       return lines;
     }
     function recalcLines() {
-      setLines(getLinesFromWordsDOM(words, typingAreaRef.current));
+      const newLines = getLinesFromWordsDOM(words, typingAreaRef.current);
+      setLines(prevLines => {
+        if (
+          prevLines.length === newLines.length &&
+          prevLines.every((line, i) => line === newLines[i])
+        ) {
+          return prevLines;
+        }
+        return newLines;
+      });
     }
     recalcLines();
     window.addEventListener('resize', recalcLines);
@@ -195,7 +231,10 @@ export function Play({ onHideChrome }) {
       window.removeEventListener('resize', recalcLines);
       if (resizeObs) resizeObs.disconnect();
       if (mutationObs) mutationObs.disconnect();
-      if (measurer) measurer.remove();
+      if (measurerRef.current && document.body.contains(measurerRef.current)) {
+        measurerRef.current.remove();
+        measurerRef.current = null;
+      }
     };
     // eslint-disable-next-line
   }, [words]);
