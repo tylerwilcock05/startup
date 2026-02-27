@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import './play.css';
 
 export function Play({ onHideChrome }) {
+  // Get username from localStorage
+  const [username, setUsername] = useState(() => localStorage.getItem('ct-username') || '');
   // Defensive: blur typing area only on unmount
   useEffect(() => {
     return () => {
@@ -11,14 +13,19 @@ export function Play({ onHideChrome }) {
       console.log('[Play] Unmounted');
     };
   }, []);
-  // In the future, replace this array with random words
-  const words = [
-    'Lorem', 'ipsum', 'dolor', 'sit', 'amet,', 'consectetur', 'adipiscing', 'elit,',
-    'sed', 'do', 'eiusmod', 'tempor', 'incididunt', 'ut', 'labore', 'et', 'dolore', 'magna', 'aliqua.',
-    'Ut', 'enim', 'ad', 'minim', 'veniam,', 'quis', 'nostrud', 'exercitation', 'ullamco', 'laboris', 'nisi', 'ut', 'aliquip', 'ex', 'ea', 'commodo', 'consequat.',
-    'Duis', 'aute', 'irure', 'dolor', 'in', 'reprehenderit', 'in', 'voluptate', 'velit', 'esse', 'cillum', 'dolore', 'eu', 'fugiat', 'nulla', 'pariatur.',
-    'Excepteur', 'sint', 'occaecat', 'cupidatat', 'non', 'proident,', 'sunt', 'in', 'culpa', 'qui', 'officia', 'deserunt', 'mollit', 'anim', 'id', 'est', 'laborum.'
+  // 200 most common English words
+  const wordBank = [
+    'the', 'be', 'of','and','a','to','in','he','have','it','that','for','they','I','with','as','not','on','she','at','by','this','we','you','do','but','from','or','which','one','would','all','will','there','say','who','make','when','can','more','if','no','man','out','other','so','what','time','up','go','about','than','into','could','state','only','new','year','some','take','come','these','know','see','use','get','like','then','first','any','work','now','may','such','give','over','think','most','even','find','day','also','after','way','many','must','look','before','great','back','through','long','where','much','should','well','people','down','own','just','because','good','each','those','feel','seem','how','high','too','place','little','world','very','still','nation','hand','old','life','tell','write','become','here','show','house','both','between','need','mean','call','develop','under','last','right','move','thing','general','school','never','same','another','begin','while','number','part','turn','real','leave','might','want','point','form','off','child','few','small','since','against','ask','late','home','interest','large','person','end','open','public','follow','during','present','without','again','hold','govern','around','possible','head','consider','word','program','problem','however','lead','system','set','order','eye','plan','run','keep','face','fact','group','play','stand','increase','early','course','change','help','line'
   ];
+  // Pick 300 random words for the typing test, only once per mount
+  function getRandomWords(arr, n) {
+    const result = [];
+    for (let i = 0; i < n; i++) {
+      result.push(arr[Math.floor(Math.random() * arr.length)]);
+    }
+    return result;
+  }
+  const [words] = useState(() => getRandomWords(wordBank, 300));
   // Join words with spaces for the full text
   const fullText = words.join(' ');
 
@@ -76,10 +83,25 @@ export function Play({ onHideChrome }) {
       // Use totalIncorrect for all-time errors
       const denominator = totalCorrect + totalIncorrect;
       const accuracyCalc = denominator > 0 ? (totalCorrect / denominator) * 100 : 0;
-      setWpm(Math.round(wpmCalc));
-      setAccuracy(Math.round(accuracyCalc));
+      const wpmVal = Math.round(wpmCalc);
+      const accuracyVal = Math.round(accuracyCalc);
+      setWpm(wpmVal);
+      setAccuracy(accuracyVal);
+
+      // Save stats to localStorage
+      const statsKey = 'ct-stats';
+      const stats = JSON.parse(localStorage.getItem(statsKey) || '{}');
+      const usernameKey = username || 'Anonymous';
+      if (!stats[usernameKey]) stats[usernameKey] = { tests: [] };
+      stats[usernameKey].tests.push({
+        date: new Date().toISOString(),
+        wpm: wpmVal,
+        accuracy: accuracyVal,
+        duration: selectedTime
+      });
+      localStorage.setItem(statsKey, JSON.stringify(stats));
     }
-  }, [timerActive, timerStarted, countdown, correctCount, totalIncorrect, selectedTime]);
+  }, [timerActive, timerStarted, countdown, correctCount, totalIncorrect, selectedTime, username]);
 
   // Handle radio input change
   const handleTimeChange = (e) => {
@@ -503,7 +525,7 @@ export function Play({ onHideChrome }) {
           <div className="container-fluid">
             <div className="players">
               Player:
-              <span className="player-name"> UsernameOfPlayer</span>
+              <span className="player-name"> {username || 'Anonymous'}</span>
               <ul className="notification">
                 <li className="player-messages">Tim got a new personal best: 100WPM - 97%</li>
                 <li className="player-messages">Ada scored in the global leaderboard: 120WPM - 98%</li>

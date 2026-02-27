@@ -1,79 +1,90 @@
-import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import './my-stats.css';
 
 export function MyStats() {
-  return (
-    <main className="my-stats container-fluid bg-dark text-center">
-          <div className="username">
-              <strong className="player-text">Player:</strong>
-              <span className="player-username"><strong>UsernameOfPlayer</strong></span>
-          </div>
-          <div className="stats-summary-row">
-              <div className="stats-summary-col">Total Tests Completed: 15</div>
-              <div className="stats-summary-col">Average WPM: 72</div>
-              <div className="stats-summary-col">Best WPM: 104</div>
-              <div className="stats-summary-col">Average Accuracy: 94%</div>
-          </div>
-                      <div className="stats-tables-row">
-                          <div className="stats-table-col">
-                                <h3 className="table-header">Best 15 seconds</h3>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>WPM</th>
-                                            <th>Accuracy</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Jan 20, 2026</td>
-                                            <td>104</td>
-                                            <td>98%</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Jan 11, 2026</td>
-                                            <td>100</td>
-                                            <td>97%</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Jan 23, 2026</td>
-                                            <td>95</td>
-                                            <td>98%</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div className="stats-table-col">
-                                <h3 className="table-header">Best 30 seconds</h3>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>WPM</th>
-                                            <th>Accuracy</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Jan 21, 2026</td>
-                                            <td>93</td>
-                                            <td>96%</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Jan 18, 2026</td>
-                                            <td>89</td>
-                                            <td>98%</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Jan 20, 2026</td>
-                                            <td>88</td>
-                                            <td>97%</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+    const [username] = useState(() => localStorage.getItem('ct-username') || 'Anonymous');
+    const [stats, setStats] = useState({ tests: [] });
+
+    useEffect(() => {
+        const statsKey = 'ct-stats';
+        const allStats = JSON.parse(localStorage.getItem(statsKey) || '{}');
+        setStats(allStats[username] || { tests: [] });
+    }, [username]);
+
+    // Calculate summary
+    const totalTests = stats.tests.length;
+    const averageWpm = totalTests ? Math.round(stats.tests.reduce((sum, t) => sum + t.wpm, 0) / totalTests) : 0;
+    const bestWpm = totalTests ? Math.max(...stats.tests.map(t => t.wpm)) : 0;
+    const averageAccuracy = totalTests ? Math.round(stats.tests.reduce((sum, t) => sum + t.accuracy, 0) / totalTests) : 0;
+
+    // Group by duration
+    const bestByDuration = (duration) => {
+        return stats.tests
+            .filter(t => t.duration === duration)
+            .sort((a, b) => b.wpm - a.wpm)
+            .slice(0, 3);
+    };
+
+    const formatDate = (iso) => {
+        const d = new Date(iso);
+        return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    };
+
+    return (
+        <main className="my-stats container-fluid bg-dark text-center">
+            <div className="username">
+                <strong className="player-text">Player:</strong>
+                <span className="player-username"><strong>{username}</strong></span>
+            </div>
+            <div className="stats-summary-row">
+                <div className="stats-summary-col">Total Tests Completed: {totalTests}</div>
+                <div className="stats-summary-col">Average WPM: {averageWpm}</div>
+                <div className="stats-summary-col">Best WPM: {bestWpm}</div>
+                <div className="stats-summary-col">Average Accuracy: {averageAccuracy}%</div>
+            </div>
+            <div className="stats-tables-row">
+                <div className="stats-table-col">
+                    <h3 className="table-header">Best 15 seconds</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>WPM</th>
+                                <th>Accuracy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {bestByDuration(15).map((t, i) => (
+                                <tr key={i}>
+                                    <td>{formatDate(t.date)}</td>
+                                    <td>{t.wpm}</td>
+                                    <td>{t.accuracy}%</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="stats-table-col">
+                    <h3 className="table-header">Best 30 seconds</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>WPM</th>
+                                <th>Accuracy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {bestByDuration(30).map((t, i) => (
+                                <tr key={i}>
+                                    <td>{formatDate(t.date)}</td>
+                                    <td>{t.wpm}</td>
+                                    <td>{t.accuracy}%</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
                 <div className="stats-table-col">
                     <h3 className="table-header">Best 60 seconds</h3>
                     <table>
@@ -85,26 +96,17 @@ export function MyStats() {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Jan 26, 2026</td>
-                                <td>88</td>
-                                <td>96%</td>
-                            </tr>
-                            <tr>
-                                <td>Jan 19, 2026</td>
-                                <td>84</td>
-                                <td>93%</td>
-                            </tr>
-                            <tr>
-                                <td>Jan 24, 2026</td>
-                                <td>80</td>
-                                <td>95%</td>
-                            </tr>
+                            {bestByDuration(60).map((t, i) => (
+                                <tr key={i}>
+                                    <td>{formatDate(t.date)}</td>
+                                    <td>{t.wpm}</td>
+                                    <td>{t.accuracy}%</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
             </div>
-
-    </main>
-  );
+        </main>
+    );
 }
