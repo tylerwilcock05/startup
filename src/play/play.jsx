@@ -2,10 +2,19 @@ import React, { useState, useRef, useEffect } from 'react';
 import './play.css';
 
 export function Play() {
-  const fullText =
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+  // In the future, replace this array with random words
+  const words = [
+    'Lorem', 'ipsum', 'dolor', 'sit', 'amet,', 'consectetur', 'adipiscing', 'elit,',
+    'sed', 'do', 'eiusmod', 'tempor', 'incididunt', 'ut', 'labore', 'et', 'dolore', 'magna', 'aliqua.',
+    'Ut', 'enim', 'ad', 'minim', 'veniam,', 'quis', 'nostrud', 'exercitation', 'ullamco', 'laboris', 'nisi', 'ut', 'aliquip', 'ex', 'ea', 'commodo', 'consequat.',
+    'Duis', 'aute', 'irure', 'dolor', 'in', 'reprehenderit', 'in', 'voluptate', 'velit', 'esse', 'cillum', 'dolore', 'eu', 'fugiat', 'nulla', 'pariatur.',
+    'Excepteur', 'sint', 'occaecat', 'cupidatat', 'non', 'proident,', 'sunt', 'in', 'culpa', 'qui', 'officia', 'deserunt', 'mollit', 'anim', 'id', 'est', 'laborum.'
+  ];
+  // Join words with spaces for the full text
+  const fullText = words.join(' ');
 
-  const [typed, setTyped] = useState('');
+  // Store all user input, including wrong letters
+  const [typed, setTyped] = useState([]); // array of chars
   const [cursorPos, setCursorPos] = useState(0);
   const typingAreaRef = useRef(null);
 
@@ -20,30 +29,135 @@ export function Play() {
   const handleKeyDown = (e) => {
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
       // Only allow typing if not past the end
-      if (cursorPos < fullText.length && e.key === fullText[cursorPos]) {
-        setTyped((prev) => prev + e.key);
+      if (cursorPos < fullText.length) {
+        setTyped((prev) => {
+          const newTyped = [...prev];
+          newTyped[cursorPos] = e.key;
+          return newTyped;
+        });
         setCursorPos((pos) => pos + 1);
       }
       e.preventDefault();
     } else if (e.key === 'Backspace') {
       if (cursorPos > 0) {
-        setTyped((prev) => prev.slice(0, -1));
+        setTyped((prev) => {
+          const newTyped = [...prev];
+          newTyped[cursorPos - 1] = undefined;
+          return newTyped;
+        });
         setCursorPos((pos) => pos - 1);
       }
       e.preventDefault();
     }
   };
 
-  // Render the text with a cursor
-  const renderTypingText = () => {
-    return (
-      <span>
-        <span className="typed-text">{fullText.slice(0, cursorPos)}</span>
-        <span className="cursor">|</span>
-        <span className="remaining-text">{fullText.slice(cursorPos)}</span>
-      </span>
-    );
-  };
+  // Split words into lines without breaking words, up to a max line length
+  const maxLineLength = 70; // adjust for your font/width
+  function getLinesFromWords(wordsArr, maxLen) {
+    const lines = [];
+    let currentLine = '';
+    for (let i = 0; i < wordsArr.length; i++) {
+      const word = wordsArr[i];
+      // +1 for space if not first word in line
+      const addLen = currentLine.length === 0 ? word.length : word.length + 1;
+      if (currentLine.length + addLen > maxLen) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine += (currentLine.length === 0 ? '' : ' ') + word;
+      }
+    }
+    if (currentLine.length > 0) lines.push(currentLine);
+    return lines;
+  }
+  const lines = getLinesFromWords(words, maxLineLength);
+
+  // Map each character in lines to its index in fullText and precompute line start indices
+  let runningIdx = 0;
+  const lineStartIndices = [];
+  const lineCharIndices = lines.map((line, idx) => {
+    lineStartIndices.push(runningIdx);
+    const arr = Array.from({ length: line.length }, (_, j) => runningIdx + j);
+    runningIdx += line.length + 1; // +1 for space/newline
+    return arr;
+  });
+
+  // Find which line the cursor is on using lineStartIndices
+  let currentLine = 0;
+  for (let i = 0; i < lineStartIndices.length; i++) {
+    const start = lineStartIndices[i];
+    const end = (i + 1 < lineStartIndices.length) ? lineStartIndices[i + 1] : fullText.length + 1;
+    if (cursorPos >= start && cursorPos < end) {
+      currentLine = i;
+      break;
+    }
+  }
+
+  // Show up to three lines: previous, current, next, but no duplicates
+  let visibleLines = [];
+  if (currentLine === 0) {
+    visibleLines = [0, 1, 2].filter(idx => idx < lines.length);
+  } else if (currentLine === lines.length - 1) {
+    visibleLines = [lines.length - 3, lines.length - 2, lines.length - 1].filter(idx => idx >= 0);
+  } else {
+    visibleLines = [currentLine - 1, currentLine, currentLine + 1];
+  }
+
+  // Render a line with coloring and cursor
+  function renderLine(lineIdx) {
+    const line = lines[lineIdx];
+    const indices = lineCharIndices[lineIdx];
+    const chars = [];
+    // Only apply first-remaining margin on the line with the cursor
+    let firstRemaining = (currentLine === lineIdx);
+    for (let j = 0; j < line.length; j++) {
+      const i = indices[j];
+      const expected = fullText[i];
+      const userChar = typed[i];
+      if (i === cursorPos) {
+        chars.push(
+          <span
+            key={"cursor"}
+            className={cursorPos === 0 ? 'cursor blink' : 'cursor'}
+          >
+            |
+          </span>
+        );
+      }
+      if (userChar === undefined) {
+        if (firstRemaining) {
+          chars.push(
+            <span key={i} className="remaining-text first-remaining">{expected}</span>
+          );
+          firstRemaining = false;
+        } else {
+          chars.push(
+            <span key={i} className="remaining-text">{expected}</span>
+          );
+        }
+      } else if (userChar === expected) {
+        chars.push(
+          <span key={i} className="typed-text">{expected}</span>
+        );
+      } else {
+        chars.push(
+          <span key={i} className="wrong-char">{expected}</span>
+        );
+      }
+    }
+    // If cursor is at the end of this line
+    if (indices[indices.length - 1] + 1 === cursorPos) {
+      chars.push(
+        <span
+          key={"cursor-end"}
+          className={cursorPos === 0 ? 'cursor blink' : 'cursor'}
+        >
+          |
+        </span>
+      );
+    }
+    return <div className="typing-line" key={lineIdx}>{chars}</div>;
+  }
 
   return (
     <main>
@@ -71,15 +185,15 @@ export function Play() {
 
       <div className="container-fluid">
         <p className="countdown">30</p>
-        <h1
+        <div
           className="typing-text"
           tabIndex={0}
           ref={typingAreaRef}
           onKeyDown={handleKeyDown}
           style={{ outline: 'none', cursor: 'none' }}
         >
-          {renderTypingText()}
-        </h1>
+          {visibleLines.map(renderLine)}
+        </div>
       </div>
 
       <div>

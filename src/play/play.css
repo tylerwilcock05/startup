@@ -1,3 +1,14 @@
+.typing-line {
+  min-height: 1.2em;
+  white-space: pre;
+}
+body {
+  font-family: 'IBM Plex Mono', monospace;
+}
+.wrong-char {
+  color: #e74c3c;
+  background: none;
+}
 #count {
   color: rgb(246, 239, 158);
 }
@@ -143,26 +154,34 @@ input[type="radio"][id="60 sec"]:checked + label[for="60 sec"] {
   padding-left: 1rem;
   color: rgb(146, 146, 146);
   line-height: 1.5;
-  word-spacing: 8px;   
+  word-spacing: 8px;
   letter-spacing: 1px;
   user-select: none;
   outline: none;
   cursor: none;
+  font-family: 'IBM Plex Mono', monospace;
 }
+
+
 
 .cursor {
   display: inline-block;
   width: 0ch;
-  margin-left: -0.3ch;
+  margin-left: -0.45ch;
   color: rgb(118, 190, 210);
   background: none;
-  animation: blink 1s steps(1) infinite;
   font-weight: bold;
+  transition: margin-left 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(-0.11em);
+}
+
+.blink {
+  animation: blink 1s steps(1) infinite;
 }
 
 @keyframes blink {
   0%, 50% { opacity: 1; }
-   51%, 100% { opacity: 0; }
+  51%, 100% { opacity: 0; }
 }
 
 .typed-text {
@@ -171,7 +190,9 @@ input[type="radio"][id="60 sec"]:checked + label[for="60 sec"] {
 
 .remaining-text {
   color: rgb(146, 146, 146);
-  margin-left: 0.3ch;
+}
+.first-remaining {
+  margin-left: 0.45ch;
 }
 
 .countdown {

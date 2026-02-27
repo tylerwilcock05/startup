@@ -7,7 +7,7 @@
   flex-direction: column;
   min-width: 375px;
   min-height: 100vh;
-  font-family: "Comic Sans MS", "Roboto Mono", Vazirmatn, monospace !important;
+  font-family: 'IBM Plex Mono', monospace !important;
 }
 
 header {
