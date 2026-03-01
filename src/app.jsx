@@ -12,6 +12,7 @@ import { MyStats } from './my-stats/my-stats';
 export default function App() {
   // Listen for Play's hide-chrome event
   const [hideChrome, setHideChrome] = useState(false);
+  const [colorScheme, setColorScheme] = useState(() => localStorage.getItem('ct-color-scheme') || 'dark');
   useEffect(() => {
     const handler = (e) => {
       if (e.detail && typeof e.detail.hideChrome === 'boolean') {
@@ -28,8 +29,17 @@ export default function App() {
       document.body.classList.remove('hide-chrome');
     }
   }, [hideChrome]);
+  useEffect(() => {
+    document.body.classList.toggle('light-scheme', colorScheme === 'light');
+    localStorage.setItem('ct-color-scheme', colorScheme);
+  }, [colorScheme]);
+
+  const handleToggleScheme = () => {
+    setColorScheme(s => s === 'dark' ? 'light' : 'dark');
+  };
+
   return (
-    <div className={`body bg-dark text-light`}>
+    <div className={`body${colorScheme === 'light' ? ' light-scheme' : ''} bg-dark text-light`}>
       <header className="container-fluid custom-layout">
         <nav className="navbar fixed-top navbar-dark bg-dark">
           <div className="container-fluid">
@@ -70,13 +80,15 @@ export default function App() {
           <Route path='*' element={<NotFound />} />
       </Routes>
 
-      <footer className="bg-dark text-white-50 container-fluid py-3">
+        <footer className="bg-dark text-white-50 container-fluid py-3">
           <div className="container-fluid"> 
-              <span className="text-reset">Tyler Wilcock</span>
-              <button className="footer push-right">Change color scheme</button>
-              <NavLink className="text-reset" to="https://github.com/tylerwilcock05/startup">GitHub</NavLink>
+            <span className="text-reset">Tyler Wilcock</span>
+            <button className="footer push-right" onClick={handleToggleScheme}>
+            Change color scheme
+            </button>
+            <NavLink className="text-reset" to="https://github.com/tylerwilcock05/startup">GitHub</NavLink>
           </div>
-      </footer>
+        </footer>
     </div>
   );
 }

@@ -12,8 +12,13 @@ export function Leaderboard() {
     const allStats = JSON.parse(localStorage.getItem(statsKey) || '{}');
     let allScores = [];
     let friends = [];
+    let currentUser = localStorage.getItem('ct-username') || '';
     if (scope === 'friends') {
       friends = JSON.parse(localStorage.getItem('ct-friends') || '[]');
+      // Always include the current user in the friends filter
+      if (currentUser && !friends.includes(currentUser)) {
+        friends = [...friends, currentUser];
+      }
     }
     for (const [username, data] of Object.entries(allStats)) {
       if (scope === 'friends' && !friends.includes(username)) continue;

@@ -4,6 +4,7 @@
 }
 body {
   font-family: 'IBM Plex Mono', monospace;
+  
 }
 .wrong-char {
   color: #e74c3c;
@@ -21,21 +22,24 @@ body {
   opacity: 0.6;
   font-size: 1em !important;
   padding-left: 0em;
-  margin-left: 0.7em;
-  margin-top: 0.5em;
-  
+  margin-left: 1.1em;
+  margin-top: 2em;
+  padding-top: 0em;
+  margin-bottom: 2em;
+  min-height: 7em;
 }
 
 .player-name {
   color: rgb(118, 190, 210);
   opacity: 0.6;
-  font-size: 0.8em !important;
+  font-size: 1em !important;
   
 }
 
 .player-messages {
-  padding-top: 0.25em;
+  padding-top:.25em;
   color: rgb(146, 146, 146);
+  
   
 }
 
@@ -68,6 +72,7 @@ main, .container-fluid {
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
+  
 }
 
 .button-container {
@@ -146,6 +151,7 @@ input[type="radio"][id="60 sec"]:checked + label[for="60 sec"] {
   margin: 1em auto;
   max-width: 400px;
   width: 100%;
+  margin-bottom: 0em;
 }
 
 .typing-text {
@@ -205,6 +211,11 @@ input[type="radio"][id="60 sec"]:checked + label[for="60 sec"] {
   color: rgb(118, 190, 210);
   font-size: 2em;
   margin-bottom: 0em;
+  margin-top: 0em;
+}
+
+.countdown.countdown-typing {
+  margin-top: 4.8em; /* or any value you want when typing */
 }
 
 .restart {

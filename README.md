@@ -93,8 +93,8 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **All functionality implemented or mocked out** - I did not complete this part of the deliverable.
-- [ ] **Hooks** - I did not complete this part of the deliverable.
+- [x] **All functionality implemented or mocked out** - the typing text is now functional with the stats, leaderboard works locally, and username saved with the stats. messages are mocked and the 3rd party call to the text is also mocekd
+- [x] **Hooks** - I used plenty of useState, useEffect, and useRef
 
 ## 🚀 Service deliverable
 

@@ -2,8 +2,85 @@ import React, { useState, useRef, useEffect } from 'react';
 import './play.css';
 
 export function Play({ onHideChrome }) {
-  // Get username from localStorage
+  // All state declarations first
   const [username, setUsername] = useState(() => localStorage.getItem('ct-username') || '');
+  // This will be replaced by a third party service call.
+  const wordBank = [
+    'the', 'be', 'of','and','a','to','in','he','have','it','that','for','they','I','with','as','not','on','she','at','by','this','we','you','do','but','from','or','which','one','would','all','will','there','say','who','make','when','can','more','if','no','man','out','other','so','what','time','up','go','about','than','into','could','state','only','new','year','some','take','come','these','know','see','use','get','like','then','first','any','work','now','may','such','give','over','think','most','even','find','day','also','after','way','many','must','look','before','great','back','through','long','where','much','should','well','people','down','own','just','because','good','each','those','feel','seem','how','high','too','place','little','world','very','still','nation','hand','old','life','tell','write','become','here','show','house','both','between','need','mean','call','develop','under','last','right','move','thing','general','school','never','same','another','begin','while','number','part','turn','real','leave','might','want','point','form','off','child','few','small','since','against','ask','late','home','interest','large','person','end','open','public','follow','during','present','without','again','hold','govern','around','possible','head','consider','word','program','problem','however','lead','system','set','order','eye','plan','run','keep','face','fact','group','play','stand','increase','early','course','change','help','line'
+  ];
+  function getRandomWords(arr, n) {
+    const result = [];
+    for (let i = 0; i < n; i++) {
+      result.push(arr[Math.floor(Math.random() * arr.length)]);
+    }
+    return result;
+  }
+  const [words] = useState(() => getRandomWords(wordBank, 300));
+  const fullText = words.join(' ');
+  const [typed, setTyped] = useState([]); // array of chars
+  const [cursorPos, setCursorPos] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [incorrectCount, setIncorrectCount] = useState(0);
+  const [totalIncorrect, setTotalIncorrect] = useState(0);
+  const [selectedTime, setSelectedTime] = useState(30);
+  const [countdown, setCountdown] = useState(30);
+  const [timerStarted, setTimerStarted] = useState(false);
+  const [timerActive, setTimerActive] = useState(true);
+  const [wpm, setWpm] = useState(null);
+  const [accuracy, setAccuracy] = useState(null);
+  const timerRef = useRef(null);
+  const typingAreaRef = useRef(null);
+  const [lines, setLines] = useState([]);
+  const [showResults, setShowResults] = useState(false);
+  // Simulated player messages
+  const sampleMessages = [
+    'Tim got a new personal best: 100WPM - 97%',
+    'Ada scored in the global leaderboard: 120WPM - 98%',
+    'James added you as a friend',
+    'Sophie just beat her record: 110WPM - 99%',
+    'Alex added you as a friend',
+    'Chris is now online',
+    'Jordan is now online',
+    'Taylor typed 105WPM - 96%',
+    'Sam is typing...',
+    'Morgan just finished a test: 115WPM - 98%',
+    'Pat is typing...'
+  ];
+  const [playerMessages, setPlayerMessages] = useState([]);
+
+  useEffect(() => {
+    if (timerStarted && timerActive) return; // Only show when chrome is visible
+    let isMounted = true;
+    const pushMessage = () => {
+      setPlayerMessages((prev) => {
+        const nextMsg = sampleMessages[Math.floor(Math.random() * sampleMessages.length)];
+        const msgs = [...prev, nextMsg];
+        return msgs.length > 3 ? msgs.slice(-3) : msgs;
+      });
+    };
+    // Start with 1-2 messages
+    setPlayerMessages(() => {
+      const n = Math.floor(Math.random() * 2) + 1;
+      const arr = [];
+      for (let i = 0; i < n; i++) {
+        arr.push(sampleMessages[Math.floor(Math.random() * sampleMessages.length)]);
+      }
+      return arr;
+    });
+    const interval = setInterval(() => {
+      if (isMounted) pushMessage();
+    }, Math.random() * 4000 + 3000); // 3-7s
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [timerStarted, timerActive]);
+
+  useEffect(() => {
+    if (!timerStarted && timerActive) {
+      setPlayerMessages([]);
+    }
+  }, [timerStarted, timerActive]);
   // Defensive: blur typing area only on unmount
   useEffect(() => {
     return () => {
@@ -13,39 +90,6 @@ export function Play({ onHideChrome }) {
       console.log('[Play] Unmounted');
     };
   }, []);
-  // 200 most common English words
-  const wordBank = [
-    'the', 'be', 'of','and','a','to','in','he','have','it','that','for','they','I','with','as','not','on','she','at','by','this','we','you','do','but','from','or','which','one','would','all','will','there','say','who','make','when','can','more','if','no','man','out','other','so','what','time','up','go','about','than','into','could','state','only','new','year','some','take','come','these','know','see','use','get','like','then','first','any','work','now','may','such','give','over','think','most','even','find','day','also','after','way','many','must','look','before','great','back','through','long','where','much','should','well','people','down','own','just','because','good','each','those','feel','seem','how','high','too','place','little','world','very','still','nation','hand','old','life','tell','write','become','here','show','house','both','between','need','mean','call','develop','under','last','right','move','thing','general','school','never','same','another','begin','while','number','part','turn','real','leave','might','want','point','form','off','child','few','small','since','against','ask','late','home','interest','large','person','end','open','public','follow','during','present','without','again','hold','govern','around','possible','head','consider','word','program','problem','however','lead','system','set','order','eye','plan','run','keep','face','fact','group','play','stand','increase','early','course','change','help','line'
-  ];
-  // Pick 300 random words for the typing test, only once per mount
-  function getRandomWords(arr, n) {
-    const result = [];
-    for (let i = 0; i < n; i++) {
-      result.push(arr[Math.floor(Math.random() * arr.length)]);
-    }
-    return result;
-  }
-  const [words] = useState(() => getRandomWords(wordBank, 300));
-  // Join words with spaces for the full text
-  const fullText = words.join(' ');
-
-  // Store all user input, including wrong letters
-  const [typed, setTyped] = useState([]); // array of chars
-  const [cursorPos, setCursorPos] = useState(0);
-  const [correctCount, setCorrectCount] = useState(0);
-  const [incorrectCount, setIncorrectCount] = useState(0);
-  // Track all errors ever made (not decremented on backspace)
-  const [totalIncorrect, setTotalIncorrect] = useState(0);
-  const [selectedTime, setSelectedTime] = useState(30);
-  const [countdown, setCountdown] = useState(30);
-  const [timerStarted, setTimerStarted] = useState(false);
-  const [timerActive, setTimerActive] = useState(true);
-  // Results
-  const [wpm, setWpm] = useState(null);
-  const [accuracy, setAccuracy] = useState(null);
-  const timerRef = useRef(null);
-  const typingAreaRef = useRef(null);
-
   // Focus the typing area on mount
   useEffect(() => {
     if (typingAreaRef.current) {
@@ -188,7 +232,6 @@ export function Play({ onHideChrome }) {
   };
 
   // --- Pixel-perfect word wrapping ---
-  const [lines, setLines] = useState([]);
   // Recalculate lines after mount, resize, or words change
   // --- DOM-based pixel-perfect word wrapping ---
   // Use a ref to persist the measurer element per Play instance
@@ -387,7 +430,6 @@ export function Play({ onHideChrome }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hideAll]);
   // Show results if timer is done, results are available, and not yet reset
-  const [showResults, setShowResults] = React.useState(false);
   useEffect(() => {
     if (!timerActive && timerStarted && wpm !== null && accuracy !== null) {
       setShowResults(true);
@@ -527,9 +569,9 @@ export function Play({ onHideChrome }) {
               Player:
               <span className="player-name"> {username || 'Anonymous'}</span>
               <ul className="notification">
-                <li className="player-messages">Tim got a new personal best: 100WPM - 97%</li>
-                <li className="player-messages">Ada scored in the global leaderboard: 120WPM - 98%</li>
-                <li className="player-messages">James added you as a friend</li>
+                {playerMessages.map((msg, i) => (
+                  <li className="player-messages" key={i}>{msg}</li>
+                ))}
               </ul>
             </div>
             <div className="time-buttons">
@@ -548,7 +590,9 @@ export function Play({ onHideChrome }) {
 
       <div className="container-fluid">
         {/* Hide countdown when results are displayed */}
-        {!showResults && <p className="countdown">{countdown}</p>}
+        {!showResults && (
+          <p className={`countdown${hideAll ? ' countdown-typing' : ''}`}>{countdown}</p>
+        )}
         {/* Typing text only visible while timer is running and not showing results */}
         {timerActive && !showResults ? (
           <div

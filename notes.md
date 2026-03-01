@@ -1,5 +1,3 @@
-# CS 260 Notes
-
 [My startup - Simon](https://simon.cs260.click)
 
 ## Helpful links
@@ -197,6 +195,17 @@ Handling the toggling of the checkboxes was particularly interesting.
   ))}
 </div>
 ```
+
+I learned a ton about how to use React, for example, how to check if a key is pressed
+
+```
+const handleKeyDownUnified = (e) => {
+  if (e.key === 'Backspace') {
+    //do something
+  }
+}
+```
+
 ## Javascript
 
 const msg = "Hello world";
