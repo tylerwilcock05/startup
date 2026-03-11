@@ -132,18 +132,19 @@ export function Play({ onHideChrome }) {
       setWpm(wpmVal);
       setAccuracy(accuracyVal);
 
-      // Save stats to localStorage
-      const statsKey = 'ct-stats';
-      const stats = JSON.parse(localStorage.getItem(statsKey) || '{}');
-      const usernameKey = username || 'Anonymous';
-      if (!stats[usernameKey]) stats[usernameKey] = { tests: [] };
-      stats[usernameKey].tests.push({
-        date: new Date().toISOString(),
-        wpm: wpmVal,
-        accuracy: accuracyVal,
-        duration: selectedTime
-      });
-      localStorage.setItem(statsKey, JSON.stringify(stats));
+      async function saveScore(score) {
+        const date = new Date().toLocaleDateString();
+        const newScore = { name: userName, score: score, date: date };
+      
+        await fetch('/api/score', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(newScore),
+        });
+      
+        // Let other players know the game has concluded
+        GameNotifier.broadcastEvent(userName, GameEvent.End, newScore);
+      }
     }
   }, [timerActive, timerStarted, countdown, correctCount, totalIncorrect, selectedTime, username]);
 
