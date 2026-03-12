@@ -47,6 +47,7 @@ export function Login(props) {
     if (response?.status === 200) {
       setIsLoggedIn(true);
       props?.onLogin?.(userName);
+      window.dispatchEvent(new CustomEvent('auth-changed', { detail: { email: userName } }));
       window.location.href = '/play';
     } else {
       const body = await response.json().catch(() => ({ msg: 'Login failed' }));
@@ -67,6 +68,7 @@ export function Login(props) {
         setIsLoggedIn(false);
         setUserName('');
         setPassword('');
+        window.dispatchEvent(new CustomEvent('auth-changed', { detail: { email: '' } }));
       });
   }
 

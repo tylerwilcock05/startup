@@ -8,28 +8,104 @@ export function MyFriends() {
   const [stats, setStats] = useState({});
   const [username, setUsername] = useState('');
 
-  // Load friends and stats from localStorage
   useEffect(() => {
-    setFriends(JSON.parse(localStorage.getItem('ct-friends') || '[]'));
-    setStats(JSON.parse(localStorage.getItem('ct-stats') || '{}'));
-    setUsername(localStorage.getItem('ct-username') || '');
+    let cancelled = false;
+
+    const refreshAll = async () => {
+      try {
+        const meRes = await fetch('/api/auth/me', { method: 'get', credentials: 'include' });
+        let currentUser = '';
+        if (meRes.ok) {
+          const me = await meRes.json().catch(() => ({}));
+          currentUser = me?.email || '';
+        }
+        if (!cancelled) setUsername(currentUser);
+
+        const friendsRes = await fetch('/api/friends', { method: 'get', credentials: 'include' });
+        const friendsBody = friendsRes.ok ? await friendsRes.json().catch(() => ({})) : {};
+        const friendList = Array.isArray(friendsBody?.friends) ? friendsBody.friends : [];
+        if (!cancelled) setFriends(friendList);
+
+        const users = [...new Set([currentUser, ...friendList].filter(Boolean))];
+        if (users.length === 0) {
+          if (!cancelled) setStats({});
+          return;
+        }
+
+        const statsRes = await fetch(`/api/stats/batch?users=${encodeURIComponent(users.join(','))}`, {
+          method: 'get',
+          credentials: 'include',
+        });
+        const statsBody = statsRes.ok ? await statsRes.json().catch(() => ({})) : {};
+        if (!cancelled) setStats(statsBody || {});
+      } catch {
+        if (!cancelled) {
+          setUsername('');
+          setFriends([]);
+          setStats({});
+        }
+      }
+    };
+
+    refreshAll();
+    window.addEventListener('auth-changed', refreshAll);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('auth-changed', refreshAll);
+    };
   }, []);
 
   // Add a friend
-  const handleAddFriend = () => {
+  const handleAddFriend = async () => {
     const name = friendName.trim();
     if (!name || friends.includes(name) || name === username) return;
-    const updated = [...friends, name];
-    setFriends(updated);
-    localStorage.setItem('ct-friends', JSON.stringify(updated));
-    setFriendName('');
+    const res = await fetch('/api/friends', {
+      method: 'post',
+      credentials: 'include',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+    if (res.ok) {
+      const body = await res.json().catch(() => ({}));
+      const updated = Array.isArray(body?.friends) ? body.friends : [];
+      setFriends(updated);
+      setFriendName('');
+
+      const users = [...new Set([username, ...updated].filter(Boolean))];
+      if (users.length > 0) {
+        const statsRes = await fetch(`/api/stats/batch?users=${encodeURIComponent(users.join(','))}`, {
+          method: 'get',
+          credentials: 'include',
+        });
+        const statsBody = statsRes.ok ? await statsRes.json().catch(() => ({})) : {};
+        setStats(statsBody || {});
+      }
+    }
   };
 
   // Remove a friend
-  const handleRemoveFriend = (name) => {
-    const updated = friends.filter(f => f !== name);
-    setFriends(updated);
-    localStorage.setItem('ct-friends', JSON.stringify(updated));
+  const handleRemoveFriend = async (name) => {
+    const res = await fetch(`/api/friends/${encodeURIComponent(name)}`, {
+      method: 'delete',
+      credentials: 'include',
+    });
+    if (res.ok) {
+      const body = await res.json().catch(() => ({}));
+      const updated = Array.isArray(body?.friends) ? body.friends : [];
+      setFriends(updated);
+
+      const users = [...new Set([username, ...updated].filter(Boolean))];
+      if (users.length === 0) {
+        setStats({});
+        return;
+      }
+      const statsRes = await fetch(`/api/stats/batch?users=${encodeURIComponent(users.join(','))}`, {
+        method: 'get',
+        credentials: 'include',
+      });
+      const statsBody = statsRes.ok ? await statsRes.json().catch(() => ({})) : {};
+      setStats(statsBody || {});
+    }
   };
 
   // Helper to get stats summary for a user

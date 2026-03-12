@@ -2,14 +2,49 @@ import React, { useState, useEffect } from 'react';
 import './my-stats.css';
 
 export function MyStats() {
-    const [username] = useState(() => localStorage.getItem('ct-username') || 'Anonymous');
+    const [username, setUsername] = useState('Anonymous');
     const [stats, setStats] = useState({ tests: [] });
 
     useEffect(() => {
-        const statsKey = 'ct-stats';
-        const allStats = JSON.parse(localStorage.getItem(statsKey) || '{}');
-        setStats(allStats[username] || { tests: [] });
-    }, [username]);
+        let cancelled = false;
+
+        const refresh = async () => {
+            try {
+                const meRes = await fetch('/api/auth/me', { method: 'get', credentials: 'include' });
+                if (!meRes.ok) {
+                    if (!cancelled) {
+                        setUsername('Anonymous');
+                        setStats({ tests: [] });
+                    }
+                    return;
+                }
+                const me = await meRes.json().catch(() => ({}));
+                if (!cancelled) {
+                    setUsername(me?.email || 'Anonymous');
+                }
+
+                const statsRes = await fetch('/api/stats', { method: 'get', credentials: 'include' });
+                if (!statsRes.ok) {
+                    if (!cancelled) setStats({ tests: [] });
+                    return;
+                }
+                const body = await statsRes.json().catch(() => ({ tests: [] }));
+                if (!cancelled) setStats(body || { tests: [] });
+            } catch {
+                if (!cancelled) {
+                    setUsername('Anonymous');
+                    setStats({ tests: [] });
+                }
+            }
+        };
+
+        refresh();
+        window.addEventListener('auth-changed', refresh);
+        return () => {
+            cancelled = true;
+            window.removeEventListener('auth-changed', refresh);
+        };
+    }, []);
 
     // Calculate summary
     const totalTests = stats.tests.length;

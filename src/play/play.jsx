@@ -22,6 +22,7 @@ export function Play({ onHideChrome }) {
   const [accuracy, setAccuracy] = useState(null);
   const timerRef = useRef(null);
   const typingAreaRef = useRef(null);
+  const statsSavedRef = useRef(false);
   const [lines, setLines] = useState([]);
   const [showResults, setShowResults] = useState(false);
   // Simulated player messages
@@ -177,18 +178,22 @@ export function Play({ onHideChrome }) {
       setWpm(wpmVal);
       setAccuracy(accuracyVal);
 
-      async function saveScore(score) {
-        const date = new Date().toLocaleDateString();
-        const newScore = { name: userName, score: score, date: date };
-      
-        await fetch('/api/score', {
+      if (!statsSavedRef.current) {
+        statsSavedRef.current = true;
+        const payload = {
+          wpm: wpmVal,
+          accuracy: accuracyVal,
+          duration: selectedTime,
+          date: new Date().toISOString(),
+        };
+        fetch('/api/stats', {
           method: 'POST',
+          credentials: 'include',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(newScore),
+          body: JSON.stringify(payload),
+        }).catch(() => {
+          // Ignore stats save errors
         });
-      
-        // Let other players know the game has concluded
-        GameNotifier.broadcastEvent(userName, GameEvent.End, newScore);
       }
     }
   }, [timerActive, timerStarted, countdown, correctCount, totalIncorrect, selectedTime, username]);
@@ -200,6 +205,7 @@ export function Play({ onHideChrome }) {
     setCountdown(value);
     setTimerStarted(false);
     setTimerActive(true);
+    statsSavedRef.current = false;
     setTyped([]);
     setCursorPos(0);
     setCorrectCount(0);
@@ -495,6 +501,7 @@ export function Play({ onHideChrome }) {
     setTimerActive(true);
     setWpm(null);
     setAccuracy(null);
+    statsSavedRef.current = false;
     // Refocus typing area after a short delay to ensure UI is reset
     setTimeout(() => {
       if (typingAreaRef.current) typingAreaRef.current.focus();
@@ -520,6 +527,7 @@ export function Play({ onHideChrome }) {
       setTimerActive(true);
       setWpm(null);
       setAccuracy(null);
+      statsSavedRef.current = false;
       setTimeout(() => {
         if (typingAreaRef.current) typingAreaRef.current.focus();
         console.log('[DEBUG] State after reset:', {

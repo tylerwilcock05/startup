@@ -45,6 +45,7 @@ apiRouter.post('/auth/login', async (req, res) => {
   if (user) {
     if (await bcrypt.compare(req.body.password, user.password)) {
       user.token = uuid.v4();
+      ensureUserData(user);
       setAuthCookie(res, user.token);
       res.send({ email: user.email });
       return;
@@ -67,6 +68,8 @@ apiRouter.delete('/auth/logout', async (req, res) => {
 const verifyAuth = async (req, res, next) => {
   const user = await findUser('token', req.cookies[authCookieName]);
   if (user) {
+    ensureUserData(user);
+    req.user = user;
     next();
   } else {
     res.status(401).send({ msg: 'Unauthorized' });
@@ -77,10 +80,74 @@ const verifyAuth = async (req, res, next) => {
 apiRouter.get('/auth/me', async (req, res) => {
   const user = await findUser('token', req.cookies[authCookieName]);
   if (user) {
+    ensureUserData(user);
     res.send({ email: user.email });
   } else {
     res.status(401).send({ msg: 'Unauthorized' });
   }
+});
+
+// Get friends for current user
+apiRouter.get('/friends', verifyAuth, (req, res) => {
+  res.send({ friends: req.user.friends });
+});
+
+// Add a friend for current user
+apiRouter.post('/friends', verifyAuth, (req, res) => {
+  const name = String(req.body?.name || req.body?.email || '').trim();
+  if (!name) {
+    res.status(400).send({ msg: 'Friend name required' });
+    return;
+  }
+  if (name === req.user.email) {
+    res.status(400).send({ msg: 'Cannot add yourself' });
+    return;
+  }
+  if (!req.user.friends.includes(name)) {
+    req.user.friends.push(name);
+  }
+  res.send({ friends: req.user.friends });
+});
+
+// Remove a friend for current user
+apiRouter.delete('/friends/:name', verifyAuth, (req, res) => {
+  const name = String(req.params?.name || '').trim();
+  req.user.friends = req.user.friends.filter((f) => f !== name);
+  res.send({ friends: req.user.friends });
+});
+
+// Get stats for current user
+apiRouter.get('/stats', verifyAuth, (req, res) => {
+  res.send(req.user.stats);
+});
+
+// Get stats for a list of users
+apiRouter.get('/stats/batch', verifyAuth, (req, res) => {
+  const raw = String(req.query.users || '');
+  const usersList = raw
+    .split(',')
+    .map((u) => u.trim())
+    .filter(Boolean);
+  const result = {};
+  for (const email of usersList) {
+    const user = users.find((u) => u.email === email);
+    result[email] = user?.stats || { tests: [] };
+  }
+  res.send(result);
+});
+
+// Add a test result for current user
+apiRouter.post('/stats', verifyAuth, (req, res) => {
+  const wpm = Number(req.body?.wpm);
+  const accuracy = Number(req.body?.accuracy);
+  const duration = Number(req.body?.duration);
+  const date = req.body?.date || new Date().toISOString();
+  if (!Number.isFinite(wpm) || !Number.isFinite(accuracy) || !Number.isFinite(duration)) {
+    res.status(400).send({ msg: 'Invalid stats payload' });
+    return;
+  }
+  req.user.stats.tests.push({ wpm, accuracy, duration, date });
+  res.send(req.user.stats);
 });
 
 // Get random words from Datamuse (no API key required)
@@ -259,6 +326,8 @@ async function createUser(email, password) {
     email: email,
     password: passwordHash,
     token: uuid.v4(),
+    friends: [],
+    stats: { tests: [] },
   };
   users.push(user);
 
@@ -269,6 +338,12 @@ async function findUser(field, value) {
   if (!value) return null;
 
   return users.find((u) => u[field] === value);
+}
+
+function ensureUserData(user) {
+  if (!user.friends) user.friends = [];
+  if (!user.stats) user.stats = { tests: [] };
+  if (!Array.isArray(user.stats.tests)) user.stats.tests = [];
 }
 
 // setAuthCookie in the HTTP response
