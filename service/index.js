@@ -276,9 +276,30 @@ apiRouter.get('/words', async (req, res) => {
   res.send({ words: pool.slice(0, count).map((item) => item.word) });
 });
 
-// GetScores
-apiRouter.get('/scores', verifyAuth, (_req, res) => {
-  res.send(scores);
+// GetScores (aggregate from user stats)
+apiRouter.get('/scores', verifyAuth, (req, res) => {
+  const viewer = req.user;
+  const friendsSet = new Set(viewer.friends || []);
+  const allScores = [];
+
+  for (const user of users) {
+    ensureUserData(user);
+    const isCurrentUser = user.email === viewer.email;
+    const isFriend = friendsSet.has(user.email);
+    for (const test of user.stats.tests) {
+      allScores.push({
+        username: user.email,
+        wpm: test.wpm,
+        accuracy: test.accuracy,
+        duration: test.duration,
+        date: test.date,
+        isFriend,
+        isCurrentUser,
+      });
+    }
+  }
+
+  res.send(allScores);
 });
 
 // SubmitScore

@@ -7,10 +7,14 @@ export function Leaderboard() {
   const [scope, setScope] = useState('everyone'); // 'everyone' or 'friends'
 
   useEffect(() => {
-    fetch('/api/scores')
-      .then((response) => response.json())
-      .then((scores) => {
-        let allScores = Array.isArray(scores) ? [...scores] : [];
+    fetch('/api/scores', { method: 'get', credentials: 'include' })
+      .then(async (response) => {
+        if (!response.ok) {
+          setScores([]);
+          return;
+        }
+        const body = await response.json().catch(() => []);
+        let allScores = Array.isArray(body) ? [...body] : [];
         if (scope === 'friends') {
           allScores = allScores.filter((score) => score.isFriend || score.isCurrentUser);
         }
@@ -18,6 +22,9 @@ export function Leaderboard() {
         // Sort by WPM descending, then accuracy descending
         allScores.sort((a, b) => b.wpm - a.wpm || b.accuracy - a.accuracy);
         setScores(allScores.slice(0, 10)); // Top 10
+      })
+      .catch(() => {
+        setScores([]);
       });
   }, [duration, scope]);
 

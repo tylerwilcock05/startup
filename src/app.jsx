@@ -13,6 +13,7 @@ export default function App() {
   // Listen for Play's hide-chrome event
   const [hideChrome, setHideChrome] = useState(false);
   const [colorScheme, setColorScheme] = useState(() => localStorage.getItem('ct-color-scheme') || 'dark');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
     const handler = (e) => {
       if (e.detail && typeof e.detail.hideChrome === 'boolean') {
@@ -34,6 +35,26 @@ export default function App() {
     localStorage.setItem('ct-color-scheme', colorScheme);
   }, [colorScheme]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const refreshAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/me', { method: 'get', credentials: 'include' });
+        if (!cancelled) setIsLoggedIn(res.ok);
+      } catch {
+        if (!cancelled) setIsLoggedIn(false);
+      }
+    };
+
+    refreshAuth();
+    window.addEventListener('auth-changed', refreshAuth);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('auth-changed', refreshAuth);
+    };
+  }, []);
+
   const handleToggleScheme = () => {
     setColorScheme(s => s === 'dark' ? 'light' : 'dark');
   };
@@ -47,23 +68,29 @@ export default function App() {
               <li className="nav-item">
               <NavLink
                 className={`nav-link title-menu${hideChrome ? ' title-menu-grey' : ''}`}
-                to="/play"
+                to={isLoggedIn ? "/play" : "/"}
                 style={{ zIndex: 1001, position: 'relative' }}
                 onClick={() => {
-                  window.dispatchEvent(new CustomEvent('play-force-reset'));
+                  if (isLoggedIn) {
+                    window.dispatchEvent(new CustomEvent('play-force-reset'));
+                  }
                 }}
               >
                 <b>Cracked Typer</b>
               </NavLink>
               </li>
-              <li className="nav-item">
-              <NavLink className="nav-link" to="/play" onClick={() => { window.dispatchEvent(new CustomEvent('play-force-reset')); }}>Play</NavLink></li>
-              <li className="nav-item">
-              <NavLink className="nav-link" to="/stats">My Stats</NavLink></li>
-              <li className="nav-item">
-              <NavLink className="nav-link" to="/friends">My Friends</NavLink></li>
-              <li className="nav-item">
-              <NavLink className="nav-link" to="/leaderboard">Leaderboard</NavLink></li>
+              {isLoggedIn && (
+                <>
+                  <li className="nav-item">
+                  <NavLink className="nav-link" to="/play" onClick={() => { window.dispatchEvent(new CustomEvent('play-force-reset')); }}>Play</NavLink></li>
+                  <li className="nav-item">
+                  <NavLink className="nav-link" to="/stats">My Stats</NavLink></li>
+                  <li className="nav-item">
+                  <NavLink className="nav-link" to="/friends">My Friends</NavLink></li>
+                  <li className="nav-item">
+                  <NavLink className="nav-link" to="/leaderboard">Leaderboard</NavLink></li>
+                </>
+              )}
               <li className="nav-item push-right">
               <NavLink className="nav-link" to="/">Login</NavLink></li>
             </menu>
