@@ -99,6 +99,11 @@ apiRouter.post('/friends', verifyAuth, (req, res) => {
     res.status(400).send({ msg: 'Friend name required' });
     return;
   }
+  const friendUser = users.find((u) => u.email === name);
+  if (!friendUser) {
+    res.status(404).send({ msg: 'User not found' });
+    return;
+  }
   if (name === req.user.email) {
     res.status(400).send({ msg: 'Cannot add yourself' });
     return;
