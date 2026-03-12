@@ -3,20 +3,12 @@ import './play.css';
 
 export function Play({ onHideChrome }) {
   // All state declarations first
-  const [username, setUsername] = useState(() => localStorage.getItem('ct-username') || '');
-  // This will be replaced by a third party service call.
-  const wordBank = [
-    'the', 'be', 'of','and','a','to','in','he','have','it','that','for','they','I','with','as','not','on','she','at','by','this','we','you','do','but','from','or','which','one','would','all','will','there','say','who','make','when','can','more','if','no','man','out','other','so','what','time','up','go','about','than','into','could','state','only','new','year','some','take','come','these','know','see','use','get','like','then','first','any','work','now','may','such','give','over','think','most','even','find','day','also','after','way','many','must','look','before','great','back','through','long','where','much','should','well','people','down','own','just','because','good','each','those','feel','seem','how','high','too','place','little','world','very','still','nation','hand','old','life','tell','write','become','here','show','house','both','between','need','mean','call','develop','under','last','right','move','thing','general','school','never','same','another','begin','while','number','part','turn','real','leave','might','want','point','form','off','child','few','small','since','against','ask','late','home','interest','large','person','end','open','public','follow','during','present','without','again','hold','govern','around','possible','head','consider','word','program','problem','however','lead','system','set','order','eye','plan','run','keep','face','fact','group','play','stand','increase','early','course','change','help','line'
-  ];
-  function getRandomWords(arr, n) {
-    const result = [];
-    for (let i = 0; i < n; i++) {
-      result.push(arr[Math.floor(Math.random() * arr.length)]);
-    }
-    return result;
-  }
-  const [words] = useState(() => getRandomWords(wordBank, 300));
+  const [username, setUsername] = useState('');
+  const [words, setWords] = useState([]);
+  const [wordsLoading, setWordsLoading] = useState(true);
+  const [wordsError, setWordsError] = useState('');
   const fullText = words.join(' ');
+  const isWordsReady = words.length > 0;
   const [typed, setTyped] = useState([]); // array of chars
   const [cursorPos, setCursorPos] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
@@ -47,6 +39,59 @@ export function Play({ onHideChrome }) {
     'Pat is typing...'
   ];
   const [playerMessages, setPlayerMessages] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setWordsLoading(true);
+    setWordsError('');
+
+    fetch(`/api/words?count=300&ts=${Date.now()}`, { cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Word load failed (${response.status})`);
+        }
+        const body = await response.json();
+        const list = Array.isArray(body) ? body : body?.words;
+        if (!Array.isArray(list) || list.length === 0) {
+          throw new Error('No words returned');
+        }
+        if (!cancelled) {
+          setWords(list);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setWordsError('Unable to load words right now.');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setWordsLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/auth/me', { method: 'get', credentials: 'include' })
+      .then(async (response) => {
+        if (response?.status !== 200) return;
+        const body = await response.json().catch(() => ({}));
+        if (!cancelled && body?.email) {
+          setUsername(body.email);
+        }
+      })
+      .catch(() => {
+        // Not logged in or offline
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (timerStarted && timerActive) return; // Only show when chrome is visible
@@ -458,6 +503,9 @@ export function Play({ onHideChrome }) {
 
   // Use a single handleKeyDown for all logic, always resetting showResults and all state on Tab
   const handleKeyDownUnified = (e) => {
+    if (!isWordsReady) {
+      return;
+    }
     if (e.key === 'Tab') {
       console.log('[DEBUG] Tab pressed. showResults:', showResults, 'timerActive:', timerActive, 'timerStarted:', timerStarted, 'countdown:', countdown);
       e.preventDefault();
@@ -603,7 +651,13 @@ export function Play({ onHideChrome }) {
             onKeyDown={handleKeyDownUnified}
             style={{ outline: 'none', cursor: 'none' }}
           >
-            {visibleLines.map(renderLine)}
+            {wordsLoading ? (
+              <div className="remaining-text">Loading words...</div>
+            ) : wordsError ? (
+              <div className="wrong-char">{wordsError}</div>
+            ) : (
+              visibleLines.map(renderLine)
+            )}
           </div>
         ) : null}
       </div>

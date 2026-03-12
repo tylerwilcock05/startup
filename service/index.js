@@ -1,6 +1,7 @@
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const express = require('express');
+const https = require('https');
 const uuid = require('uuid');
 const app = express();
 
@@ -80,6 +81,132 @@ apiRouter.get('/auth/me', async (req, res) => {
   } else {
     res.status(401).send({ msg: 'Unauthorized' });
   }
+});
+
+// Get random words from Datamuse (no API key required)
+apiRouter.get('/words', async (req, res) => {
+  const requestedCount = parseInt(req.query.count, 10);
+  const count = Number.isFinite(requestedCount) ? Math.min(Math.max(requestedCount, 1), 500) : 300;
+  const poolSize = Math.min(Math.max(count * 4, 400), 1200);
+
+  const letterWeights = [
+    ['e', 12.7], ['t', 9.1], ['a', 8.2], ['o', 7.5], ['i', 7.0], ['n', 6.7],
+    ['s', 6.3], ['h', 6.1], ['r', 6.0], ['d', 4.3], ['l', 4.0], ['c', 2.8],
+    ['u', 2.8], ['m', 2.4], ['w', 2.4], ['f', 2.2], ['g', 2.0], ['y', 2.0],
+    ['p', 1.9], ['b', 1.5], ['v', 1.0], ['k', 0.8], ['j', 0.2], ['x', 0.2],
+    ['q', 0.1], ['z', 0.1],
+  ];
+
+  const pickWeightedLetter = () => {
+    const total = letterWeights.reduce((sum, [, w]) => sum + w, 0);
+    let r = Math.random() * total;
+    for (const [letter, weight] of letterWeights) {
+      r -= weight;
+      if (r <= 0) return letter;
+    }
+    return 'e';
+  };
+
+  res.set('Cache-Control', 'no-store');
+
+  const fetchDatamuse = (pattern) =>
+    new Promise((resolve, reject) => {
+      const url = new URL('https://api.datamuse.com/words');
+      url.searchParams.set('sp', pattern);
+      url.searchParams.set('max', String(poolSize));
+      url.searchParams.set('md', 'f');
+      https
+        .get(url, { family: 4 }, (apiRes) => {
+          let raw = '';
+          apiRes.on('data', (chunk) => (raw += chunk));
+          apiRes.on('end', () => {
+            if (apiRes.statusCode < 200 || apiRes.statusCode >= 300) {
+              console.error('[words] Datamuse non-2xx:', apiRes.statusCode, raw.slice(0, 200));
+              reject(new Error('Datamuse non-2xx'));
+              return;
+            }
+            try {
+              const parsed = JSON.parse(raw);
+              resolve(Array.isArray(parsed) ? parsed : []);
+            } catch {
+              reject(new Error('Invalid Datamuse response'));
+            }
+          });
+        })
+        .on('error', (err) => {
+          console.error('[words] Datamuse error:', err && (err.code || err.message) ? (err.code || err.message) : err);
+          reject(err);
+        });
+    });
+
+  const distinctLetters = 20;
+  const letters = new Set();
+  while (letters.size < distinctLetters) {
+    letters.add(pickWeightedLetter());
+  }
+  const results = await Promise.allSettled(
+    Array.from(letters).map((l) => fetchDatamuse(`${l}*`))
+  );
+  let combined = results
+    .filter((r) => r.status === 'fulfilled')
+    .flatMap((r) => r.value);
+
+  if (combined.length === 0) {
+    combined = await fetchDatamuse('*').catch(() => []);
+  }
+  if (combined.length === 0) {
+    res.status(502).send({ msg: 'Datamuse request failed' });
+    return;
+  }
+
+  let candidates = combined
+    .map((item) => {
+      const word = String(item?.word || '').trim();
+      const score = Number.isFinite(item?.score) ? item.score : 0;
+      const tags = Array.isArray(item?.tags) ? item.tags : [];
+      const freqTag = tags.find((tag) => typeof tag === 'string' && tag.startsWith('f:'));
+      const freq = freqTag ? Number(freqTag.slice(2)) : 0;
+      return { word, score, freq };
+    })
+    .filter((item) => item.word && /^[A-Za-z]+$/.test(item.word))
+    .filter((item) => item.word.length >= 2 && item.word.length <= 8);
+
+  const withFreq = candidates.filter((item) => item.freq > 0);
+  const minFreq = 200;
+  let commonPool = [];
+
+  if (withFreq.length > 0) {
+    // Prefer common words by frequency; fall back to score if needed.
+    withFreq.sort((a, b) => (b.freq - a.freq) || (b.score - a.score));
+    const maxFreq = withFreq[0]?.freq || 0;
+    const effectiveMinFreq = Math.min(minFreq, maxFreq);
+    commonPool = withFreq.filter((item) => item.freq >= effectiveMinFreq);
+    if (commonPool.length === 0) {
+      commonPool = withFreq.slice(0, Math.min(withFreq.length, Math.max(count * 3, 400)));
+    }
+  } else {
+    // No frequency data available; fall back to score.
+    const ranked = [...candidates].sort((a, b) => b.score - a.score);
+    commonPool = ranked.slice(0, Math.min(ranked.length, Math.max(count * 3, 400)));
+  }
+
+  const commonPoolSize = Math.min(commonPool.length, Math.max(count * 3, 400));
+  let pool = commonPool.slice(0, commonPoolSize);
+
+  for (let i = pool.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+
+  if (pool.length < count && pool.length > 0) {
+    const extended = [...pool];
+    while (extended.length < count) {
+      extended.push(pool[Math.floor(Math.random() * pool.length)]);
+    }
+    pool = extended;
+  }
+
+  res.send({ words: pool.slice(0, count).map((item) => item.word) });
 });
 
 // GetScores
