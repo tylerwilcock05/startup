@@ -72,6 +72,16 @@ const verifyAuth = async (req, res, next) => {
   }
 };
 
+// GetAuth current user
+apiRouter.get('/auth/me', async (req, res) => {
+  const user = await findUser('token', req.cookies[authCookieName]);
+  if (user) {
+    res.send({ email: user.email });
+  } else {
+    res.status(401).send({ msg: 'Unauthorized' });
+  }
+});
+
 // GetScores
 apiRouter.get('/scores', verifyAuth, (_req, res) => {
   res.send(scores);

@@ -7,37 +7,18 @@ export function Leaderboard() {
   const [scope, setScope] = useState('everyone'); // 'everyone' or 'friends'
 
   useEffect(() => {
-    // Gather all users' stats from localStorage
-    const statsKey = 'ct-stats';
-    const allStats = JSON.parse(localStorage.getItem(statsKey) || '{}');
-    let allScores = [];
-    let friends = [];
-    let currentUser = localStorage.getItem('ct-username') || '';
-    if (scope === 'friends') {
-      friends = JSON.parse(localStorage.getItem('ct-friends') || '[]');
-      // Always include the current user in the friends filter
-      if (currentUser && !friends.includes(currentUser)) {
-        friends = [...friends, currentUser];
-      }
-    }
-    for (const [username, data] of Object.entries(allStats)) {
-      if (scope === 'friends' && !friends.includes(username)) continue;
-      if (data && Array.isArray(data.tests)) {
-        for (const test of data.tests) {
-          if (test.duration === duration) {
-            allScores.push({
-              username,
-              wpm: test.wpm,
-              accuracy: test.accuracy,
-              date: test.date
-            });
-          }
+    fetch('/api/scores')
+      .then((response) => response.json())
+      .then((scores) => {
+        let allScores = Array.isArray(scores) ? [...scores] : [];
+        if (scope === 'friends') {
+          allScores = allScores.filter((score) => score.isFriend || score.isCurrentUser);
         }
-      }
-    }
-    // Sort by WPM descending, then accuracy descending
-    allScores.sort((a, b) => b.wpm - a.wpm || b.accuracy - a.accuracy);
-    setScores(allScores.slice(0, 10)); // Top 10
+        allScores = allScores.filter((score) => score.duration === duration);
+        // Sort by WPM descending, then accuracy descending
+        allScores.sort((a, b) => b.wpm - a.wpm || b.accuracy - a.accuracy);
+        setScores(allScores.slice(0, 10)); // Top 10
+      });
   }, [duration, scope]);
 
     const formatDate = (iso) => {
