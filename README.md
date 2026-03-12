@@ -20,11 +20,11 @@ Have you ever wondered how you could improve your typing skills in a fun, simpli
 
 ### Design
 
-![Login](Login.png)
-![Main Page](MainPage.png)
-![Friend Page](FriendPage.png)
-![Stat Page](StatPage.png)
-![Leaderboard](Leaderboard.png)
+![Login](public/Login.png)
+![Main Page](public/MainPage.png)
+![Friend Page](public/FriendPage.png)
+![Stat Page](public/StatPage.png)
+![Leaderboard](public/Leaderboard.png)
 
 Here's my design
 https://ninjamock.com/s/2GX9QZx
@@ -100,12 +100,12 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Node.js/Express HTTP service** - I did not complete this part of the deliverable.
-- [ ] **Static middleware for frontend** - I did not complete this part of the deliverable.
-- [ ] **Calls to third party endpoints** - I did not complete this part of the deliverable.
-- [ ] **Backend service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Frontend calls service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Supports registration, login, logout, and restricted endpoint** - I did not complete this part of the deliverable.
+- [x] **Node.js/Express HTTP service** - I used express in the service directory (index.js)
+- [x] **Static middleware for frontend** - I used app.use(express.static('public'))
+- [x] **Calls to third party endpoints** - in play.jsx I called to Datamuse to gets random common english words
+- [x] **Backend service endpoints** - My code applies backend functionality to the login, friends page, stats page, and leaderboard
+- [x] **Frontend calls service endpoints** - My frontend calls the authorization, friends page, stats page, and leaderboard
+- [x] **Supports registration, login, logout, and restricted endpoint** - My code implements this in creating users, logging in, logging out, verifying the user--on restricted endpoints.
 
 ## 🚀 DB deliverable
 
