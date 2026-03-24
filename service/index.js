@@ -7,10 +7,6 @@ const app = express();
 
 const authCookieName = 'token';
 
-// The scores and users are saved in memory and disappear whenever the service is restarted.
-let users = [];
-let scores = [];
-
 // The service port. In production the front-end code is statically hosted by the service on the same port.
 const port = process.argv.length > 2 ? process.argv[2] : 3000;
 
@@ -45,7 +41,7 @@ apiRouter.post('/auth/login', async (req, res) => {
   if (user) {
     if (await bcrypt.compare(req.body.password, user.password)) {
       user.token = uuid.v4();
-      ensureUserData(user);
+      await Db.updateUser(user);
       setAuthCookie(res, user.token);
       res.send({ email: user.email });
       return;
@@ -58,7 +54,7 @@ apiRouter.post('/auth/login', async (req, res) => {
 apiRouter.delete('/auth/logout', async (req, res) => {
   const user = await findUser('token', req.cookies[authCookieName]);
   if (user) {
-    delete user.token;
+    await Db.updateUserRemoveAuth(user);
   }
   res.clearCookie(authCookieName);
   res.status(204).end();
@@ -68,8 +64,6 @@ apiRouter.delete('/auth/logout', async (req, res) => {
 const verifyAuth = async (req, res, next) => {
   const user = await findUser('token', req.cookies[authCookieName]);
   if (user) {
-    ensureUserData(user);
-    req.user = user;
     next();
   } else {
     res.status(401).send({ msg: 'Unauthorized' });
@@ -282,35 +276,23 @@ apiRouter.get('/words', async (req, res) => {
 });
 
 // GetScores (aggregate from user stats)
-apiRouter.get('/scores', verifyAuth, (req, res) => {
-  const viewer = req.user;
-  const friendsSet = new Set(viewer.friends || []);
-  const allScores = [];
-
-  for (const user of users) {
-    ensureUserData(user);
-    const isCurrentUser = user.email === viewer.email;
-    const isFriend = friendsSet.has(user.email);
-    for (const test of user.stats.tests) {
-      allScores.push({
-        username: user.email,
-        wpm: test.wpm,
-        accuracy: test.accuracy,
-        duration: test.duration,
-        date: test.date,
-        isFriend,
-        isCurrentUser,
-      });
-    }
+apiRouter.get('/scores', verifyAuth, async (req, res) => {
+  try {
+    const scores = await DB.getHighScores();
+    res.send(scores);
+  } catch (err) {
+    res.status(500).send({ msg: 'Failed to fetch scores' });
   }
-
-  res.send(allScores);
 });
 
 // SubmitScore
-apiRouter.post('/score', verifyAuth, (req, res) => {
-  scores = updateScores(req.body);
-  res.send(scores);
+apiRouter.post('/score', verifyAuth, async (req, res) => {
+  try {
+    const score = await DB.addScore(req.body);
+    res.send(score);
+  } catch (err) {
+    res.status(500).send({ msg: 'Failed to submit score' });
+  }
 });
 
 // Default error handler
