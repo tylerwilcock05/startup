@@ -289,7 +289,7 @@ apiRouter.get('/scores', verifyAuth, async (req, res) => {
 // SubmitScore
 apiRouter.post('/score', verifyAuth, async (req, res) => {
   try {
-    const score = await DB.addScore(req.body);
+    const score = await updateScores(req.body);
     res.send(score);
   } catch (err) {
     res.status(500).send({ msg: 'Failed to submit score' });
@@ -307,25 +307,9 @@ app.use((_req, res) => {
 });
 
 // updateScores considers a new score for inclusion in the high scores.
-function updateScores(newScore) {
-  let found = false;
-  for (const [i, prevScore] of scores.entries()) {
-    if (newScore.score > prevScore.score) {
-      scores.splice(i, 0, newScore);
-      found = true;
-      break;
-    }
-  }
-
-  if (!found) {
-    scores.push(newScore);
-  }
-
-  if (scores.length > 10) {
-    scores.length = 10;
-  }
-
-  return scores;
+async function updateScores(newScore) {
+  await DB.addScore(newScore);
+  return DB.getHighScores();
 }
 
 async function createUser(email, password) {
@@ -338,7 +322,7 @@ async function createUser(email, password) {
     friends: [],
     stats: { tests: [] },
   };
-  users.push(user);
+  await DB.addUser(user);
 
   return user;
 }
@@ -346,7 +330,11 @@ async function createUser(email, password) {
 async function findUser(field, value) {
   if (!value) return null;
 
-  return users.find((u) => u[field] === value);
+  if (field === 'token') {
+    return DB.getUserByToken(value);
+  }
+
+  return DB.getUser(value);
 }
 
 function ensureUserData(user) {
