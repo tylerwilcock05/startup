@@ -39,7 +39,15 @@ async function updateUserRemoveAuth(user) {
 }
 
 async function addScore(score) {
-  return scoreCollection.insertOne(score);
+  // Ensure required fields for leaderboard
+  const doc = {
+    wpm: Number(score.wpm),
+    accuracy: Number(score.accuracy),
+    duration: Number(score.duration),
+    date: score.date || new Date().toISOString(),
+    username: score.username || score.name || 'Anonymous',
+  };
+  return scoreCollection.insertOne(doc);
 }
 
 async function getHighScores() {

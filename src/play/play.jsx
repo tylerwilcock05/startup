@@ -277,7 +277,18 @@ export function Play({ onHideChrome }) {
           accuracy: accuracyVal,
           duration: selectedTime,
           date: new Date().toISOString(),
+          username: username || 'Anonymous',
         };
+        // Submit to leaderboard as well
+        fetch('/api/score', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(payload),
+        }).catch(() => {
+          // Ignore leaderboard save errors
+        });
+        // Still submit to stats for user history
         fetch('/api/stats', {
           method: 'POST',
           credentials: 'include',
