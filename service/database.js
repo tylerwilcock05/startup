@@ -42,14 +42,21 @@ async function addScore(score) {
   return scoreCollection.insertOne(score);
 }
 
-function getHighScores() {
-  const query = { score: { $gt: 0, $lt: 900 } };
+async function getHighScores() {
+  // Fetch top 10 scores, sorted by wpm descending
+  const query = { wpm: { $gt: 0 } };
   const options = {
-    sort: { score: -1 },
+    sort: { wpm: -1 },
     limit: 10,
+    projection: { _id: 0, wpm: 1, accuracy: 1, name: 1, date: 1 },
   };
   const cursor = scoreCollection.find(query, options);
-  return cursor.toArray();
+  const scores = await cursor.toArray();
+  // Add placement (1-based index)
+  return scores.map((score, idx) => ({
+    placement: idx + 1,
+    ...score
+  }));
 }
 
 module.exports = {
