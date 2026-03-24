@@ -31,7 +31,8 @@ async function addUser(user) {
 }
 
 async function updateUser(user) {
-  await userCollection.updateOne({ email: user.email }, { $set: user });
+  const { _id, ...safeUser } = user || {};
+  await userCollection.updateOne({ email: safeUser.email }, { $set: safeUser });
 }
 
 async function updateUserRemoveAuth(user) {
@@ -50,20 +51,24 @@ async function addScore(score) {
   return scoreCollection.insertOne(doc);
 }
 
-async function getHighScores() {
+async function getHighScores(limit = 10) {
   // Fetch top 10 scores, sorted by wpm descending
   const query = { wpm: { $gt: 0 } };
   const options = {
     sort: { wpm: -1 },
-    limit: 10,
-    projection: { _id: 0, wpm: 1, accuracy: 1, name: 1, date: 1 },
+    limit: Math.max(1, Math.min(Number(limit) || 10, 500)),
+    projection: { _id: 0, wpm: 1, accuracy: 1, duration: 1, username: 1, name: 1, date: 1 },
   };
   const cursor = scoreCollection.find(query, options);
   const scores = await cursor.toArray();
   // Add placement (1-based index)
   return scores.map((score, idx) => ({
     placement: idx + 1,
-    ...score
+    wpm: score.wpm,
+    accuracy: score.accuracy,
+    duration: score.duration,
+    date: score.date,
+    username: score.username || score.name || 'Anonymous',
   }));
 }
 

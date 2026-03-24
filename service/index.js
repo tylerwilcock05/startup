@@ -65,6 +65,8 @@ apiRouter.delete('/auth/logout', async (req, res) => {
 const verifyAuth = async (req, res, next) => {
   const user = await findUser('token', req.cookies[authCookieName]);
   if (user) {
+    ensureUserData(user);
+    req.user = user;
     next();
   } else {
     res.status(401).send({ msg: 'Unauthorized' });
@@ -88,13 +90,13 @@ apiRouter.get('/friends', verifyAuth, (req, res) => {
 });
 
 // Add a friend for current user
-apiRouter.post('/friends', verifyAuth, (req, res) => {
+apiRouter.post('/friends', verifyAuth, async (req, res) => {
   const name = String(req.body?.name || req.body?.email || '').trim();
   if (!name) {
     res.status(400).send({ msg: 'Friend name required' });
     return;
   }
-  const friendUser = users.find((u) => u.email === name);
+  const friendUser = await DB.getUser(name);
   if (!friendUser) {
     res.status(404).send({ msg: 'User not found' });
     return;
@@ -106,13 +108,15 @@ apiRouter.post('/friends', verifyAuth, (req, res) => {
   if (!req.user.friends.includes(name)) {
     req.user.friends.push(name);
   }
+  await DB.updateUser(req.user);
   res.send({ friends: req.user.friends });
 });
 
 // Remove a friend for current user
-apiRouter.delete('/friends/:name', verifyAuth, (req, res) => {
+apiRouter.delete('/friends/:name', verifyAuth, async (req, res) => {
   const name = String(req.params?.name || '').trim();
   req.user.friends = req.user.friends.filter((f) => f !== name);
+  await DB.updateUser(req.user);
   res.send({ friends: req.user.friends });
 });
 
@@ -122,22 +126,23 @@ apiRouter.get('/stats', verifyAuth, (req, res) => {
 });
 
 // Get stats for a list of users
-apiRouter.get('/stats/batch', verifyAuth, (req, res) => {
+apiRouter.get('/stats/batch', verifyAuth, async (req, res) => {
   const raw = String(req.query.users || '');
   const usersList = raw
     .split(',')
     .map((u) => u.trim())
     .filter(Boolean);
   const result = {};
-  for (const email of usersList) {
-    const user = users.find((u) => u.email === email);
+  const fetched = await Promise.all(usersList.map((email) => DB.getUser(email)));
+  usersList.forEach((email, idx) => {
+    const user = fetched[idx];
     result[email] = user?.stats || { tests: [] };
-  }
+  });
   res.send(result);
 });
 
 // Add a test result for current user
-apiRouter.post('/stats', verifyAuth, (req, res) => {
+apiRouter.post('/stats', verifyAuth, async (req, res) => {
   const wpm = Number(req.body?.wpm);
   const accuracy = Number(req.body?.accuracy);
   const duration = Number(req.body?.duration);
@@ -147,6 +152,7 @@ apiRouter.post('/stats', verifyAuth, (req, res) => {
     return;
   }
   req.user.stats.tests.push({ wpm, accuracy, duration, date });
+  await DB.updateUser(req.user);
   res.send(req.user.stats);
 });
 
@@ -279,8 +285,18 @@ apiRouter.get('/words', async (req, res) => {
 // GetScores (aggregate from user stats)
 apiRouter.get('/scores', verifyAuth, async (req, res) => {
   try {
-    const scores = await DB.getHighScores();
-    res.send(scores);
+    const scores = await DB.getHighScores(200);
+    const currentEmail = String(req.user?.email || '').toLowerCase();
+    const friendsSet = new Set((req.user?.friends || []).map((f) => String(f).toLowerCase()));
+    const decorated = scores.map((score) => {
+      const username = String(score.username || '').toLowerCase();
+      return {
+        ...score,
+        isCurrentUser: currentEmail && username === currentEmail,
+        isFriend: username && friendsSet.has(username),
+      };
+    });
+    res.send(decorated);
   } catch (err) {
     res.status(500).send({ msg: 'Failed to fetch scores' });
   }
