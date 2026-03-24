@@ -4,6 +4,7 @@ const express = require('express');
 const https = require('https');
 const uuid = require('uuid');
 const app = express();
+const DB = require('./database');
 
 const authCookieName = 'token';
 
@@ -41,7 +42,7 @@ apiRouter.post('/auth/login', async (req, res) => {
   if (user) {
     if (await bcrypt.compare(req.body.password, user.password)) {
       user.token = uuid.v4();
-      await Db.updateUser(user);
+      await DB.updateUser(user);
       setAuthCookie(res, user.token);
       res.send({ email: user.email });
       return;
@@ -54,7 +55,7 @@ apiRouter.post('/auth/login', async (req, res) => {
 apiRouter.delete('/auth/logout', async (req, res) => {
   const user = await findUser('token', req.cookies[authCookieName]);
   if (user) {
-    await Db.updateUserRemoveAuth(user);
+    await DB.updateUserRemoveAuth(user);
   }
   res.clearCookie(authCookieName);
   res.status(204).end();
