@@ -357,3 +357,65 @@ function setAuthCookie(res, authToken) {
   });
 }
 ```
+
+
+## Database
+Here's what I learned by doing the database deliverable
+
+This is what to put into the dbConfig.json file
+```
+{
+  "hostname": "cs260.abcdefg.mongodb.net",
+  "userName": "myMongoUserName",
+  "password": "toomanysecrets"
+}
+```
+
+This is how to make a connection with mongo DB
+```
+const url = `mongodb+srv://${config.userName}:${config.password}@${config.hostname}`;
+const client = new MongoClient(url);
+const db = client.db('simon');
+
+(async function testConnection() {
+  try {
+    await db.command({ ping: 1 });
+  } catch (ex) {
+    console.log(`Unable to connect to database with ${url} because ${ex.message}`);
+    process.exit(1);
+  }
+})();
+```
+
+This is how to do database requests
+```
+function getUser(email) {
+  return userCollection.findOne({ email: email });
+}
+
+function getUserByToken(token) {
+  return userCollection.findOne({ token: token });
+}
+
+async function addUser(user) {
+  await userCollection.insertOne(user);
+}
+
+async function updateUser(user) {
+  await userCollection.updateOne({ email: user.email }, { $set: user });
+}
+
+async function addScore(score) {
+  return scoreCollection.insertOne(score);
+}
+
+function getHighScores() {
+  const query = { score: { $gt: 0, $lt: 900 } };
+  const options = {
+    sort: { score: -1 },
+    limit: 10,
+  };
+  const cursor = scoreCollection.find(query, options);
+  return cursor.toArray();
+}
+```
