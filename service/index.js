@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const express = require('express');
 const https = require('https');
 const uuid = require('uuid');
+const fs = require('fs');
 const app = express();
 const DB = require('./database');
 const { peerProxy } = require('./peerProxy.js');
@@ -20,8 +21,10 @@ app.use(cookieParser());
 
 // Serve up the Vite production build and static content
 const path = require('path');
-app.use(express.static(path.join(__dirname, '../dist')));
-app.use(express.static(path.join(__dirname, '../public')));
+const distPath = path.join(__dirname, '../dist');
+const publicPath = path.join(__dirname, '../public');
+app.use(express.static(distPath));
+app.use(express.static(publicPath));
 
 // Router for service endpoints
 var apiRouter = express.Router();
@@ -324,7 +327,10 @@ app.use(function (err, req, res, next) {
 
 // SPA Fallback: serve index.html for any unknown route (for React Router)
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
+  const distIndex = path.join(distPath, 'index.html');
+  const publicIndex = path.join(publicPath, 'index.html');
+  const indexPath = fs.existsSync(distIndex) ? distIndex : publicIndex;
+  res.sendFile(indexPath);
 });
 
 // updateScores considers a new score for inclusion in the high scores.
