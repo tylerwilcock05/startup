@@ -141,9 +141,8 @@ main {
 
 footer {
   width: 100vw;
-  overflow-x: hidden;
+  overflow: hidden;
   max-width: 100vw;
-  overflow-x: hidden;
 }
 
 menu {
@@ -161,13 +160,12 @@ footer,
 footer > .container-fluid {
     box-sizing: border-box;
     max-width: 100vw;
-    overflow-x: hidden;
+    overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: flex-start; 
   gap: 1rem;
   padding: 0.5rem 1rem;
-  overflow-x: hidden;
 }
 
 footer a,
