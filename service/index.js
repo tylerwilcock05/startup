@@ -5,7 +5,6 @@ const https = require('https');
 const uuid = require('uuid');
 const app = express();
 const DB = require('./database');
-const DB = require('./database.js');
 const { peerProxy } = require('./peerProxy.js');
 
 const authCookieName = 'token';
