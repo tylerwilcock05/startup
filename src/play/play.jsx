@@ -664,19 +664,36 @@ export function Play({ onHideChrome }) {
     }, 50);
   };
 
-  // Use a single handleKeyDown for all logic, always resetting showResults and all state on Tab
+  // Unified keydown handler: handles typing, Tab reset, cursor movement, and notification triggers
   const handleKeyDownUnified = (e) => {
     if (!isWordsReady) {
       return;
     }
+    // Tab resets the test
     if (e.key === 'Tab') {
-      // ...existing code...
+      e.preventDefault();
+      setShowResults(false);
+      setTyped([]);
+      setCursorPos(0);
+      setCorrectCount(0);
+      setIncorrectCount(0);
+      setTotalIncorrect(0);
+      setCountdown(selectedTime);
+      setTimerStarted(false);
+      setTimerActive(true);
+      setWpm(null);
+      setAccuracy(null);
+      statsSavedRef.current = false;
+      setTimeout(() => {
+        if (typingAreaRef.current) typingAreaRef.current.focus();
+      }, 50);
       return;
     }
+    // If timer is not active, ignore typing
     if (!timerActive) {
-      // ...existing code...
       return;
     }
+    // Start timer on first valid key
     if (!timerStarted && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
       setTimerStarted(true);
       // --- Notify all friends that you started a test ---
@@ -692,10 +709,42 @@ export function Play({ onHideChrome }) {
           });
         });
     }
+    // Typing a character
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      // ...existing code...
+      if (cursorPos < fullText.length) {
+        setTyped((prev) => {
+          const newTyped = [...prev];
+          newTyped[cursorPos] = e.key;
+          return newTyped;
+        });
+        if (e.key === fullText[cursorPos]) {
+          setCorrectCount((c) => c + 1);
+        } else {
+          setIncorrectCount((c) => c + 1);
+          setTotalIncorrect((c) => c + 1);
+        }
+        setCursorPos((pos) => pos + 1);
+      }
+      e.preventDefault();
     } else if (e.key === 'Backspace') {
-      // ...existing code...
+      if (cursorPos > 0) {
+        setTyped((prev) => {
+          const newTyped = [...prev];
+          const prevChar = newTyped[cursorPos - 1];
+          if (prevChar !== undefined) {
+            if (prevChar === fullText[cursorPos - 1]) {
+              setCorrectCount((c) => Math.max(0, c - 1));
+            } else {
+              setIncorrectCount((c) => Math.max(0, c - 1));
+              // Do NOT decrement totalIncorrect
+            }
+          }
+          newTyped[cursorPos - 1] = undefined;
+          return newTyped;
+        });
+        setCursorPos((pos) => pos - 1);
+      }
+      e.preventDefault();
     }
   };
 
