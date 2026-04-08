@@ -21,8 +21,11 @@ app.use(cookieParser());
 
 // Serve up the Vite production build and static content
 const path = require('path');
-const distPath = path.join(__dirname, '../dist');
-const publicPath = path.join(__dirname, '../public');
+const appRoot = fs.existsSync(path.join(__dirname, 'public'))
+  ? __dirname
+  : path.join(__dirname, '..');
+const distPath = path.join(appRoot, 'dist');
+const publicPath = path.join(appRoot, 'public');
 app.use(express.static(distPath));
 app.use(express.static(publicPath));
 
