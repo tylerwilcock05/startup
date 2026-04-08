@@ -21,9 +21,19 @@ class GameEventNotifier {
   handlers = [];
 
   constructor() {
+    // Use backend port in development, otherwise use current port
     let port = window.location.port;
+    let wsHost = window.location.hostname;
+    let wsPort = port;
+    if (
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === '0.0.0.0'
+    ) {
+      wsPort = '3000'; // Express backend default
+    }
     const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
-    this.socket = new WebSocket(`${protocol}://${window.location.hostname}:${port}/ws`);
+    this.socket = new WebSocket(`${protocol}://${wsHost}:${wsPort}/ws`);
     this.socket.onopen = (event) => {
       this.receiveEvent(new EventMessage('System', GameEvent.System, { msg: 'connected' }));
     };
