@@ -301,7 +301,30 @@ export function Play({ onHideChrome }) {
           credentials: 'include',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify(payload),
-        }).catch(() => {
+        })
+        .then(async (res) => {
+          if (!res.ok) return;
+          // Try to get the leaderboard after submitting score
+          const scoresRes = await fetch('/api/scores', { method: 'get', credentials: 'include' });
+          if (!scoresRes.ok) return;
+          const scores = await scoresRes.json().catch(() => []);
+          // Find this user's best placement for this duration
+          const myScores = Array.isArray(scores) ? scores.filter(s => s.username === username && s.duration === selectedTime) : [];
+          if (myScores.length > 0) {
+            // Find the best (lowest) placement
+            const best = myScores.reduce((a, b) => (a.placement < b.placement ? a : b));
+            // If this score is in the top 10, notify everyone
+            if (best.placement && best.placement <= 10 && best.wpm === wpmVal) {
+              let rank = best.placement;
+              if (rank === 1) rank = '1st';
+              else if (rank === 2) rank = '2nd';
+              else if (rank === 3) rank = '3rd';
+              else rank = `${rank}th`;
+              GameNotifier.notifyLeaderboardScore(username, rank, wpmVal, selectedTime);
+            }
+          }
+        })
+        .catch(() => {
           // Ignore leaderboard save errors
         });
         // Still submit to stats for user history
