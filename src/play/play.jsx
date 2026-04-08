@@ -28,6 +28,15 @@ export function Play({ onHideChrome }) {
   const [showResults, setShowResults] = useState(false);
   // Player messages from WebSocket and GameNotifier
   const [playerMessages, setPlayerMessages] = useState([]);
+  // Prevent page scrollbars while on the Play screen
+  useEffect(() => {
+    document.body.classList.add('play-no-scroll');
+    document.documentElement.classList.add('play-no-scroll');
+    return () => {
+      document.body.classList.remove('play-no-scroll');
+      document.documentElement.classList.remove('play-no-scroll');
+    };
+  }, []);
   // Listen for GameNotifier events (WebSocket notifications)
   useEffect(() => {
     if (!username) return;
@@ -462,6 +471,8 @@ export function Play({ onHideChrome }) {
       const measurer = document.createElement('span');
       measurer.style.visibility = 'hidden';
       measurer.style.position = 'absolute';
+      measurer.style.left = '-10000px';
+      measurer.style.top = '0';
       measurer.style.whiteSpace = 'pre';
       measurer.style.pointerEvents = 'none';
       measurer.style.zIndex = -1;
@@ -784,7 +795,7 @@ export function Play({ onHideChrome }) {
   }, [showResults]);
 
   return (
-    <main>
+    <main className="play-page">
       {/* Show chrome only if not typing and not showing results */}
       {!hideAll && !showResults && (
         <>
