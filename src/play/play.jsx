@@ -271,8 +271,9 @@ export function Play({ onHideChrome }) {
           // Retry up to 3 times to fetch leaderboard with new score
           let found = false;
           let placement = null;
+          let bestIdx = null;
+          let bestDate = null;
           for (let attempt = 0; attempt < 3 && !found; ++attempt) {
-            // Wait 0ms, 150ms, 300ms
             if (attempt > 0) await new Promise(r => setTimeout(r, 150 * attempt));
             const scoresRes = await fetch('/api/scores', { method: 'get', credentials: 'include' });
             if (!scoresRes.ok) continue;
@@ -287,10 +288,17 @@ export function Play({ onHideChrome }) {
                   Number(s.wpm) === Number(wpmVal) &&
                   Number(s.accuracy) === Number(accuracyVal)
                 ) {
-                  placement = i + 1;
-                  found = true;
-                  break;
+                  // Pick the most recent date
+                  const sDate = new Date(s.date).getTime();
+                  if (bestDate === null || sDate > bestDate) {
+                    bestDate = sDate;
+                    bestIdx = i;
+                  }
                 }
+              }
+              if (bestIdx !== null) {
+                placement = bestIdx + 1;
+                found = true;
               }
             }
           }
