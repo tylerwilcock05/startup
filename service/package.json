@@ -13,7 +13,8 @@
         "cookie-parser": "^1.4.7",
         "express": "^5.2.1",
         "uuid": "^11.1.0",
-        "mongodb": "^6.x"
+        "mongodb": "^6.x",
+        "ws": "^8.18.1"
     },
     "keywords": [],
     "type": "commonjs"
