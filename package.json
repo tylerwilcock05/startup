@@ -37,6 +37,7 @@
     "react-router-dom": "^7.13.0",
     "rollup": "^4.57.1",
     "source-map-js": "^1.2.1",
-    "tinyglobby": "^0.2.15"
+    "tinyglobby": "^0.2.15",
+    "ws": "^8.20.0"
   }
 }
