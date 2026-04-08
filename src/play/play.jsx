@@ -25,21 +25,9 @@ export function Play({ onHideChrome }) {
   const statsSavedRef = useRef(false);
   const [lines, setLines] = useState([]);
   const [showResults, setShowResults] = useState(false);
-  // Simulated player messages
-  const sampleMessages = [
-    'Tim got a new personal best: 100WPM - 97%',
-    'Ada scored in the global leaderboard: 120WPM - 98%',
-    'James added you as a friend',
-    'Sophie just beat her record: 110WPM - 99%',
-    'Alex added you as a friend',
-    'Chris is now online',
-    'Jordan is now online',
-    'Taylor typed 105WPM - 96%',
-    'Sam is typing...',
-    'Morgan just finished a test: 115WPM - 98%',
-    'Pat is typing...'
-  ];
+  // Player messages from WebSocket
   const [playerMessages, setPlayerMessages] = useState([]);
+  const wsRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -186,33 +174,38 @@ export function Play({ onHideChrome }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (timerStarted && timerActive) return; // Only show when chrome is visible
-    let isMounted = true;
-    const pushMessage = () => {
-      setPlayerMessages((prev) => {
-        const nextMsg = sampleMessages[Math.floor(Math.random() * sampleMessages.length)];
-        const msgs = [...prev, nextMsg];
-        return msgs.length > 3 ? msgs.slice(-3) : msgs;
-      });
-    };
-    // Start with 1-2 messages
-    setPlayerMessages(() => {
-      const n = Math.floor(Math.random() * 2) + 1;
-      const arr = [];
-      for (let i = 0; i < n; i++) {
-        arr.push(sampleMessages[Math.floor(Math.random() * sampleMessages.length)]);
+    // Connect to peerProxy WebSocket for player messages
+    useEffect(() => {
+      if (timerStarted && timerActive) return;
+      let ws;
+      let isMounted = true;
+      function handleMessage(event) {
+        try {
+          const data = JSON.parse(event.data);
+          if (data && data.type === 'player-message' && typeof data.message === 'string') {
+            setPlayerMessages((prev) => {
+              const msgs = [...prev, data.message];
+              return msgs.length > 3 ? msgs.slice(-3) : msgs;
+            });
+          }
+        } catch {}
       }
-      return arr;
-    });
-    const interval = setInterval(() => {
-      if (isMounted) pushMessage();
-    }, Math.random() * 4000 + 3000); // 3-7s
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
-  }, [timerStarted, timerActive]);
+      ws = new window.WebSocket(`ws${window.location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws`);
+      wsRef.current = ws;
+      ws.addEventListener('message', handleMessage);
+      ws.addEventListener('open', () => {
+        // Optionally, identify this client or subscribe to a channel
+        ws.send(JSON.stringify({ type: 'subscribe', channel: 'player-messages' }));
+      });
+      ws.addEventListener('close', () => {
+        // Optionally handle reconnect
+      });
+      return () => {
+        isMounted = false;
+        ws.removeEventListener('message', handleMessage);
+        ws.close();
+      };
+    }, [timerStarted, timerActive]);
 
   useEffect(() => {
     if (!timerStarted && timerActive) {
