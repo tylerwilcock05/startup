@@ -323,7 +323,7 @@ app.use(function (err, req, res, next) {
 
 
 // SPA Fallback: serve index.html for any unknown route (for React Router)
-app.get('*', (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
