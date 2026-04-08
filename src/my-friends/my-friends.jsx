@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import './my-friends.css';
+import { GameNotifier } from '../play/gameNotifier';
 
 export function MyFriends() {
   const [friendName, setFriendName] = useState('');
@@ -70,6 +71,11 @@ export function MyFriends() {
       const updated = Array.isArray(body?.friends) ? body.friends : [];
       setFriends(updated);
       setFriendName('');
+
+      // Notify the friend via WebSocket
+      if (username && name) {
+        GameNotifier.notifyFriendAdded(username, name);
+      }
 
       const users = [...new Set([username, ...updated].filter(Boolean))];
       if (users.length > 0) {
