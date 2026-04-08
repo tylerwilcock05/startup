@@ -153,7 +153,7 @@ export function MyFriends() {
 
   return (
     <main className="my-friends">
-      <h2>Friends</h2>
+      <h2 class="friend-header">Friends</h2>
       <input
         type="text"
         id="friendName"
