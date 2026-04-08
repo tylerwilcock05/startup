@@ -419,3 +419,50 @@ function getHighScores() {
   return cursor.toArray();
 }
 ```
+
+
+## websocket
+use this to implement websocket
+```
+notifyFriendAdded(from, to) {
+    // Notify 'to' that 'from' added them as a friend
+    this.broadcastEvent(from, GameEvent.FriendAdded, { msg: `${from} added you as a friend`, to });
+  }
+
+  notifyLeaderboardScore(from, rank, wpm, seconds) {
+    // Notify all users of a new leaderboard score
+    this.broadcastEvent(from, GameEvent.LeaderboardScore, { msg: `${from} just got ${rank} on the global leaderboard (${wpm}WPM - ${seconds} seconds)`, rank, wpm, seconds });
+  }
+
+  notifyFriendStartedTest(from, to, seconds) {
+    // Notify 'to' that 'from' started a test
+    this.broadcastEvent(from, GameEvent.FriendStartedTest, { msg: `${from} just started a ${seconds} second test`, to, seconds });
+  }
+
+  notifyFriendFinishedTest(from, to, wpm, seconds) {
+    // Notify 'to' that 'from' finished a test
+    this.broadcastEvent(from, GameEvent.FriendFinishedTest, { msg: `${from} just got ${wpm} WPM on a ${seconds} second test`, to, wpm, seconds });
+  }
+
+  broadcastEvent(from, type, value) {
+    const event = new EventMessage(from, type, value);
+    this.socket.send(JSON.stringify(event));
+  }
+  
+  addHandler(handler) {
+    this.handlers.push(handler);
+  }
+
+  removeHandler(handler) {
+    this.handlers = this.handlers.filter((h) => h !== handler);
+  }
+
+  receiveEvent(event) {
+    this.events.push(event);
+    // Only notify handlers for the latest event
+    this.handlers.forEach((handler) => {
+      handler(event);
+    });
+  }
+}
+```
