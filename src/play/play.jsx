@@ -268,26 +268,29 @@ export function Play({ onHideChrome }) {
         })
         .then(async (res) => {
           if (!res.ok) return;
-          // Try to get the leaderboard after submitting score
-          const scoresRes = await fetch('/api/scores', { method: 'get', credentials: 'include' });
-          if (!scoresRes.ok) return;
-          const scores = await scoresRes.json().catch(() => []);
-          // Find the placement for the current score in the global leaderboard
-          // Match on username, wpm, accuracy, and duration
+          // Retry up to 3 times to fetch leaderboard with new score
+          let found = false;
           let placement = null;
-          if (Array.isArray(scores)) {
-            for (let i = 0; i < scores.length; ++i) {
-              const s = scores[i];
-              // Robust matching: username case-insensitive, duration as number, wpm/accuracy as numbers
-              if (
-                typeof s.username === 'string' &&
-                s.username.toLowerCase() === String(username).toLowerCase() &&
-                Number(s.duration) === Number(selectedTime) &&
-                Number(s.wpm) === Number(wpmVal) &&
-                Number(s.accuracy) === Number(accuracyVal)
-              ) {
-                placement = i + 1;
-                break;
+          for (let attempt = 0; attempt < 3 && !found; ++attempt) {
+            // Wait 0ms, 150ms, 300ms
+            if (attempt > 0) await new Promise(r => setTimeout(r, 150 * attempt));
+            const scoresRes = await fetch('/api/scores', { method: 'get', credentials: 'include' });
+            if (!scoresRes.ok) continue;
+            const scores = await scoresRes.json().catch(() => []);
+            if (Array.isArray(scores)) {
+              for (let i = 0; i < scores.length; ++i) {
+                const s = scores[i];
+                if (
+                  typeof s.username === 'string' &&
+                  s.username.toLowerCase() === String(username).toLowerCase() &&
+                  Number(s.duration) === Number(selectedTime) &&
+                  Number(s.wpm) === Number(wpmVal) &&
+                  Number(s.accuracy) === Number(accuracyVal)
+                ) {
+                  placement = i + 1;
+                  found = true;
+                  break;
+                }
               }
             }
           }
