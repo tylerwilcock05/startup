@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './play.css';
+import { GameNotifier, GameEvent } from './gameNotifier';
 
 export function Play({ onHideChrome }) {
   // All state declarations first
@@ -25,9 +26,31 @@ export function Play({ onHideChrome }) {
   const statsSavedRef = useRef(false);
   const [lines, setLines] = useState([]);
   const [showResults, setShowResults] = useState(false);
-  // Player messages from WebSocket
+  // Player messages from WebSocket and GameNotifier
   const [playerMessages, setPlayerMessages] = useState([]);
   const wsRef = useRef(null);
+  // Listen for GameNotifier events (WebSocket notifications)
+  useEffect(() => {
+    if (!username) return;
+    function handler(event) {
+      // Only show relevant notifications for this user
+      if (
+        (event.type === GameEvent.FriendAdded && event.value.to === username) ||
+        (event.type === GameEvent.FriendStartedTest && event.value.to === username) ||
+        (event.type === GameEvent.FriendFinishedTest && event.value.to === username) ||
+        event.type === GameEvent.LeaderboardScore
+      ) {
+        setPlayerMessages((prev) => {
+          const msgs = [...prev, event.value.msg];
+          return msgs.length > 3 ? msgs.slice(-3) : msgs;
+        });
+      }
+    }
+    GameNotifier.addHandler(handler);
+    return () => {
+      GameNotifier.removeHandler(handler);
+    };
+  }, [username]);
 
   useEffect(() => {
     let cancelled = false;
