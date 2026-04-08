@@ -51,7 +51,7 @@ async function getHighScores(limit = 10) {
   // Fetch top 10 scores, sorted by wpm descending
   const query = { wpm: { $gt: 0 } };
   const options = {
-    sort: { wpm: -1 },
+    sort: { wpm: -1, accuracy: -1, date: 1 },
     limit: Math.max(1, Math.min(Number(limit) || 10, 500)),
     projection: { _id: 0, wpm: 1, accuracy: 1, duration: 1, username: 1, name: 1, date: 1 },
   };

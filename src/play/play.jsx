@@ -252,14 +252,16 @@ export function Play({ onHideChrome }) {
 
       if (!statsSavedRef.current) {
         statsSavedRef.current = true;
+        // Always use the current user's email as username
         const payload = {
           wpm: wpmVal,
           accuracy: accuracyVal,
           duration: selectedTime,
           date: new Date().toISOString(),
-          username: username || 'Anonymous',
+          username: username,
         };
         // Submit to leaderboard as well
+        console.log('[Leaderboard Notification] Submitting score payload:', payload);
         fetch('/api/score', {
           method: 'POST',
           credentials: 'include',
@@ -267,7 +269,10 @@ export function Play({ onHideChrome }) {
           body: JSON.stringify(payload),
         })
         .then(async (res) => {
-          if (!res.ok) return;
+          if (!res.ok) {
+            console.log('[Leaderboard Notification] /api/score POST failed:', res.status);
+            return;
+          }
           // Retry up to 3 times to fetch leaderboard with new score
           let found = false;
           let placement = null;
@@ -276,21 +281,26 @@ export function Play({ onHideChrome }) {
           for (let attempt = 0; attempt < 3 && !found; ++attempt) {
             if (attempt > 0) await new Promise(r => setTimeout(r, 150 * attempt));
             const scoresRes = await fetch('/api/scores', { method: 'get', credentials: 'include' });
-            if (!scoresRes.ok) continue;
+            if (!scoresRes.ok) {
+              console.log(`[Leaderboard Notification] /api/scores fetch failed (attempt ${attempt + 1}):`, scoresRes.status);
+              continue;
+            }
             const scores = await scoresRes.json().catch(() => []);
+            console.log(`[Leaderboard Notification] /api/scores result (attempt ${attempt + 1}):`, scores);
             if (Array.isArray(scores)) {
               for (let i = 0; i < scores.length; ++i) {
                 const s = scores[i];
+                // Robust matching: trim and lowercase username, match numbers, duration
                 if (
                   typeof s.username === 'string' &&
-                  s.username.toLowerCase() === String(username).toLowerCase() &&
+                  s.username.trim().toLowerCase() === String(username).trim().toLowerCase() &&
                   Number(s.duration) === Number(selectedTime) &&
                   Number(s.wpm) === Number(wpmVal) &&
                   Number(s.accuracy) === Number(accuracyVal)
                 ) {
-                  // Pick the most recent date
+                  // Pick the score with the oldest date (for leaderboard tie-breaking)
                   const sDate = new Date(s.date).getTime();
-                  if (bestDate === null || sDate > bestDate) {
+                  if (bestDate === null || sDate < bestDate) {
                     bestDate = sDate;
                     bestIdx = i;
                   }
@@ -303,6 +313,7 @@ export function Play({ onHideChrome }) {
             }
           }
           if (placement !== null && placement <= 10) {
+            // Fix off-by-one: add 1 to placement for notification
             function ordinal(n) {
               if (n % 100 >= 11 && n % 100 <= 13) return n + 'th';
               switch (n % 10) {
@@ -312,12 +323,21 @@ export function Play({ onHideChrome }) {
                 default: return n + 'th';
               }
             }
-            const rank = ordinal(placement);
+            if (placement !== 1) {
+              const rank = ordinal(placement - 1);
+            }
+            console.log('[Leaderboard Notification] Sending notification:', { username, rank, wpmVal, selectedTime, placement });
             GameNotifier.notifyLeaderboardScore(username, rank, wpmVal, selectedTime);
+          } else {
+            // Debug log if notification is skipped
+            console.log('[Leaderboard Notification] No matching score found for notification:', {
+              username, wpmVal, accuracyVal, selectedTime, placement
+            });
           }
         })
-        .catch(() => {
+        .catch((err) => {
           // Ignore leaderboard save errors
+          console.log('[Leaderboard Notification] Error in leaderboard notification logic:', err);
         });
         // Still submit to stats for user history
         fetch('/api/stats', {
