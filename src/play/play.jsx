@@ -278,18 +278,20 @@ export function Play({ onHideChrome }) {
           if (Array.isArray(scores)) {
             for (let i = 0; i < scores.length; ++i) {
               const s = scores[i];
+              // Robust matching: username case-insensitive, duration as number, wpm/accuracy as numbers
               if (
-                s.username === username &&
-                s.duration === selectedTime &&
-                s.wpm === wpmVal &&
-                s.accuracy === accuracyVal
+                typeof s.username === 'string' &&
+                s.username.toLowerCase() === String(username).toLowerCase() &&
+                Number(s.duration) === Number(selectedTime) &&
+                Number(s.wpm) === Number(wpmVal) &&
+                Number(s.accuracy) === Number(accuracyVal)
               ) {
                 placement = i + 1;
                 break;
               }
             }
           }
-          if (placement && placement <= 10) {
+          if (placement !== null && placement <= 10) {
             function ordinal(n) {
               if (n % 100 >= 11 && n % 100 <= 13) return n + 'th';
               switch (n % 10) {
