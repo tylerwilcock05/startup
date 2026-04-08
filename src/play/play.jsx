@@ -272,12 +272,24 @@ export function Play({ onHideChrome }) {
           const scoresRes = await fetch('/api/scores', { method: 'get', credentials: 'include' });
           if (!scoresRes.ok) return;
           const scores = await scoresRes.json().catch(() => []);
-          // Find this user's scores for this duration
-          const myScores = Array.isArray(scores) ? scores.filter(s => s.username === username && s.duration === selectedTime) : [];
-          // Find the placement for the current score (matching wpm and accuracy)
-          const currentScore = myScores.find(s => s.wpm === wpmVal && s.accuracy === accuracyVal);
-          if (currentScore && currentScore.placement && currentScore.placement <= 10) {
-            // Format ordinal correctly
+          // Find the placement for the current score in the global leaderboard
+          // Match on username, wpm, accuracy, and duration
+          let placement = null;
+          if (Array.isArray(scores)) {
+            for (let i = 0; i < scores.length; ++i) {
+              const s = scores[i];
+              if (
+                s.username === username &&
+                s.duration === selectedTime &&
+                s.wpm === wpmVal &&
+                s.accuracy === accuracyVal
+              ) {
+                placement = i + 1;
+                break;
+              }
+            }
+          }
+          if (placement && placement <= 10) {
             function ordinal(n) {
               if (n % 100 >= 11 && n % 100 <= 13) return n + 'th';
               switch (n % 10) {
@@ -287,7 +299,7 @@ export function Play({ onHideChrome }) {
                 default: return n + 'th';
               }
             }
-            const rank = ordinal(currentScore.placement);
+            const rank = ordinal(placement);
             GameNotifier.notifyLeaderboardScore(username, rank, wpmVal, selectedTime);
           }
         })
