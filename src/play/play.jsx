@@ -313,7 +313,6 @@ export function Play({ onHideChrome }) {
             }
           }
           if (placement !== null && placement <= 10) {
-            // Fix off-by-one: add 1 to placement for notification
             function ordinal(n) {
               if (n % 100 >= 11 && n % 100 <= 13) return n + 'th';
               switch (n % 10) {
@@ -323,9 +322,7 @@ export function Play({ onHideChrome }) {
                 default: return n + 'th';
               }
             }
-            if (placement !== 1) {
-              const rank = ordinal(placement - 1);
-            }
+            const rank = ordinal(placement);
             console.log('[Leaderboard Notification] Sending notification:', { username, rank, wpmVal, selectedTime, placement });
             GameNotifier.notifyLeaderboardScore(username, rank, wpmVal, selectedTime);
           } else {
