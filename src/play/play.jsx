@@ -647,82 +647,32 @@ export function Play({ onHideChrome }) {
       return;
     }
     if (e.key === 'Tab') {
-      console.log('[DEBUG] Tab pressed. showResults:', showResults, 'timerActive:', timerActive, 'timerStarted:', timerStarted, 'countdown:', countdown);
-      e.preventDefault();
-      setShowResults(false);
-      setTyped([]);
-      setCursorPos(0);
-      setCorrectCount(0);
-      setIncorrectCount(0);
-      setTotalIncorrect(0);
-      setCountdown(selectedTime);
-      setTimerStarted(false);
-      setTimerActive(true);
-      setWpm(null);
-      setAccuracy(null);
-      statsSavedRef.current = false;
-      setTimeout(() => {
-        if (typingAreaRef.current) typingAreaRef.current.focus();
-        console.log('[DEBUG] State after reset:', {
-          showResults,
-          typed: [],
-          cursorPos: 0,
-          correctCount: 0,
-          incorrectCount: 0,
-          totalIncorrect: 0,
-          countdown: selectedTime,
-          timerStarted: false,
-          timerActive: true,
-          wpm: null,
-          accuracy: null
-        });
-      }, 50);
+      // ...existing code...
       return;
     }
     if (!timerActive) {
-      console.log('[DEBUG] Key ignored because timer is not active.');
+      // ...existing code...
       return;
     }
     if (!timerStarted && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
       setTimerStarted(true);
-      console.log('[DEBUG] Timer started.');
+      // --- Notify all friends that you started a test ---
+      fetch('/api/friends', { method: 'get', credentials: 'include' })
+        .then(async (res) => {
+          if (!res.ok) return;
+          const body = await res.json().catch(() => ({}));
+          const friends = Array.isArray(body?.friends) ? body.friends : [];
+          friends.forEach((friend) => {
+            if (username && friend) {
+              GameNotifier.notifyFriendStartedTest(username, friend, selectedTime);
+            }
+          });
+        });
     }
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      if (cursorPos < fullText.length) {
-        setTyped((prev) => {
-          const newTyped = [...prev];
-          newTyped[cursorPos] = e.key;
-          return newTyped;
-        });
-        if (e.key === fullText[cursorPos]) {
-          setCorrectCount((c) => c + 1);
-        } else {
-          setIncorrectCount((c) => c + 1);
-          setTotalIncorrect((c) => c + 1);
-        }
-        setCursorPos((pos) => pos + 1);
-        console.log('[DEBUG] Typed:', e.key, 'cursorPos:', cursorPos + 1);
-      }
-      e.preventDefault();
+      // ...existing code...
     } else if (e.key === 'Backspace') {
-      if (cursorPos > 0) {
-        setTyped((prev) => {
-          const newTyped = [...prev];
-          const prevChar = newTyped[cursorPos - 1];
-          if (prevChar !== undefined) {
-            if (prevChar === fullText[cursorPos - 1]) {
-              setCorrectCount((c) => Math.max(0, c - 1));
-            } else {
-              setIncorrectCount((c) => Math.max(0, c - 1));
-            }
-          }
-          newTyped[cursorPos - 1] = undefined;
-          return newTyped;
-        });
-        setCursorPos((pos) => pos - 1);
-        console.log('[DEBUG] Backspace. cursorPos:', cursorPos - 1);
-      }
-      e.preventDefault();
+      // ...existing code...
     }
   };
 
