@@ -313,6 +313,20 @@ export function Play({ onHideChrome }) {
         }).catch(() => {
           // Ignore stats save errors
         });
+
+        // --- Notify all friends that you finished a test ---
+        // Fetch friends list and send notification to each
+        fetch('/api/friends', { method: 'get', credentials: 'include' })
+          .then(async (res) => {
+            if (!res.ok) return;
+            const body = await res.json().catch(() => ({}));
+            const friends = Array.isArray(body?.friends) ? body.friends : [];
+            friends.forEach((friend) => {
+              if (username && friend) {
+                GameNotifier.notifyFriendFinishedTest(username, friend, wpmVal, selectedTime);
+              }
+            });
+          });
       }
     }
   }, [timerActive, timerStarted, countdown, correctCount, totalIncorrect, selectedTime, username]);
