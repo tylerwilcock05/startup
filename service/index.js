@@ -18,8 +18,10 @@ app.use(express.json());
 // Use the cookie parser middleware for tracking authentication tokens
 app.use(cookieParser());
 
-// Serve up the front-end static content hosting
-app.use(express.static('public'));
+// Serve up the Vite production build and static content
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../dist')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Router for service endpoints
 var apiRouter = express.Router();
@@ -319,9 +321,10 @@ app.use(function (err, req, res, next) {
   res.status(500).send({ type: err.name, message: err.message });
 });
 
-// Return the application's default page if the path is unknown
-app.use((_req, res) => {
-  res.sendFile('index.html', { root: 'public' });
+
+// SPA Fallback: serve index.html for any unknown route (for React Router)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 // updateScores considers a new score for inclusion in the high scores.
