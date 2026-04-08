@@ -35,10 +35,6 @@ async function updateUser(user) {
   await userCollection.updateOne({ email: safeUser.email }, { $set: safeUser });
 }
 
-async function updateUserRemoveAuth(user) {
-  await userCollection.updateOne({ email: user.email }, { $unset: { token: 1 } });
-}
-
 async function addScore(score) {
   // Ensure required fields for leaderboard
   const doc = {
@@ -77,7 +73,6 @@ module.exports = {
   getUserByToken,
   addUser,
   updateUser,
-  updateUserRemoveAuth,
   addScore,
   getHighScores,
 };
