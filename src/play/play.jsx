@@ -28,7 +28,6 @@ export function Play({ onHideChrome }) {
   const [showResults, setShowResults] = useState(false);
   // Player messages from WebSocket and GameNotifier
   const [playerMessages, setPlayerMessages] = useState([]);
-  const wsRef = useRef(null);
   // Listen for GameNotifier events (WebSocket notifications)
   useEffect(() => {
     if (!username) return;
@@ -197,44 +196,9 @@ export function Play({ onHideChrome }) {
     };
   }, []);
 
-    // Connect to peerProxy WebSocket for player messages
-    useEffect(() => {
-      if (timerStarted && timerActive) return;
-      let ws;
-      let isMounted = true;
-      function handleMessage(event) {
-        try {
-          const data = JSON.parse(event.data);
-          if (data && data.type === 'player-message' && typeof data.message === 'string') {
-            setPlayerMessages((prev) => {
-              const msgs = [...prev, data.message];
-              return msgs.length > 3 ? msgs.slice(-3) : msgs;
-            });
-          }
-        } catch {}
-      }
-      ws = new window.WebSocket(`ws${window.location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws`);
-      wsRef.current = ws;
-      ws.addEventListener('message', handleMessage);
-      ws.addEventListener('open', () => {
-        // Optionally, identify this client or subscribe to a channel
-        ws.send(JSON.stringify({ type: 'subscribe', channel: 'player-messages' }));
-      });
-      ws.addEventListener('close', () => {
-        // Optionally handle reconnect
-      });
-      return () => {
-        isMounted = false;
-        ws.removeEventListener('message', handleMessage);
-        ws.close();
-      };
-    }, [timerStarted, timerActive]);
 
-  useEffect(() => {
-    if (!timerStarted && timerActive) {
-      setPlayerMessages([]);
-    }
-  }, [timerStarted, timerActive]);
+
+
   // Defensive: blur typing area only on unmount
   useEffect(() => {
     return () => {
