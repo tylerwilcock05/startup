@@ -272,20 +272,23 @@ export function Play({ onHideChrome }) {
           const scoresRes = await fetch('/api/scores', { method: 'get', credentials: 'include' });
           if (!scoresRes.ok) return;
           const scores = await scoresRes.json().catch(() => []);
-          // Find this user's best placement for this duration
+          // Find this user's scores for this duration
           const myScores = Array.isArray(scores) ? scores.filter(s => s.username === username && s.duration === selectedTime) : [];
-          if (myScores.length > 0) {
-            // Find the best (lowest) placement
-            const best = myScores.reduce((a, b) => (a.placement < b.placement ? a : b));
-            // If this score is in the top 10, notify everyone
-            if (best.placement && best.placement <= 10 && best.wpm === wpmVal) {
-              let rank = best.placement;
-              if (rank === 1) rank = '1st';
-              else if (rank === 2) rank = '2nd';
-              else if (rank === 3) rank = '3rd';
-              else rank = `${rank}th`;
-              GameNotifier.notifyLeaderboardScore(username, rank, wpmVal, selectedTime);
+          // Find the placement for the current score (matching wpm and accuracy)
+          const currentScore = myScores.find(s => s.wpm === wpmVal && s.accuracy === accuracyVal);
+          if (currentScore && currentScore.placement && currentScore.placement <= 10) {
+            // Format ordinal correctly
+            function ordinal(n) {
+              if (n % 100 >= 11 && n % 100 <= 13) return n + 'th';
+              switch (n % 10) {
+                case 1: return n + 'st';
+                case 2: return n + 'nd';
+                case 3: return n + 'rd';
+                default: return n + 'th';
+              }
             }
+            const rank = ordinal(currentScore.placement);
+            GameNotifier.notifyLeaderboardScore(username, rank, wpmVal, selectedTime);
           }
         })
         .catch(() => {
