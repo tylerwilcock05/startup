@@ -248,4 +248,5 @@ input[type="radio"][id="60 sec"]:checked + label[for="60 sec"] {
   justify-content: center;
   align-items: center;
   margin-top: 1.2rem;
+  padding-top: 12rem;
 }
