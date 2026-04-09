@@ -241,7 +241,7 @@ input[type="radio"][id="60 sec"]:checked + label[for="60 sec"] {
 }
 
 .pb-badge {
-  margin-top: -0.4em;
+  margin-top: 0em;
   color: rgb(118, 190, 210);
   font-weight: 600;
   font-size: 1.1em;
@@ -249,10 +249,11 @@ input[type="radio"][id="60 sec"]:checked + label[for="60 sec"] {
 }
 
 .leaderboard-result {
-  margin-top: -0.4em;
+  margin-top: -1em;
   color: rgb(118, 190, 210);
   font-size: 1.1em;
   padding-top: 0.4rem;
+  font-weight: 600;
 }
 
 /* Results row styling */

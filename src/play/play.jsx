@@ -276,11 +276,12 @@ export function Play({ onHideChrome }) {
           })
           .catch(() => {});
         // Always use the current user's email as username
+        const payloadDate = new Date().toISOString();
         const payload = {
           wpm: wpmVal,
           accuracy: accuracyVal,
           duration: selectedTime,
-          date: new Date().toISOString(),
+          date: payloadDate,
           username: username,
         };
         // Submit to leaderboard as well
@@ -299,9 +300,9 @@ export function Play({ onHideChrome }) {
           // Retry up to 3 times to fetch leaderboard with new score
           let found = false;
           let placement = null;
-          for (let attempt = 0; attempt < 3 && !found; ++attempt) {
-            if (attempt > 0) await new Promise(r => setTimeout(r, 150 * attempt));
-            const scoresRes = await fetch(`/api/scores?duration=${selectedTime}&limit=10`, { method: 'get', credentials: 'include' });
+          for (let attempt = 0; attempt < 4 && !found; ++attempt) {
+            if (attempt > 0) await new Promise(r => setTimeout(r, 250 * attempt));
+            const scoresRes = await fetch(`/api/scores?limit=200`, { method: 'get', credentials: 'include' });
             if (!scoresRes.ok) {
               console.log(`[Leaderboard Notification] /api/scores fetch failed (attempt ${attempt + 1}):`, scoresRes.status);
               continue;
@@ -309,19 +310,41 @@ export function Play({ onHideChrome }) {
             const scores = await scoresRes.json().catch(() => []);
             console.log(`[Leaderboard Notification] /api/scores result (attempt ${attempt + 1}):`, scores);
             if (Array.isArray(scores)) {
-              for (let i = 0; i < scores.length; ++i) {
-                const s = scores[i];
-                // Robust matching: trim and lowercase username, match numbers, duration
-                if (
-                  typeof s.username === 'string' &&
-                  s.username.trim().toLowerCase() === String(username).trim().toLowerCase() &&
-                  Number(s.duration) === Number(selectedTime) &&
-                  Number(s.wpm) === Number(wpmVal) &&
-                  Number(s.accuracy) === Number(accuracyVal)
-                ) {
-                  placement = Number(s.placement) || (i + 1);
+              const filtered = scores
+                .filter((s) => Number(s.duration) === Number(selectedTime))
+                .sort((a, b) => Number(b.wpm) - Number(a.wpm) || Number(b.accuracy) - Number(a.accuracy) || new Date(a.date).getTime() - new Date(b.date).getTime());
+
+              const targetUser = String(username).trim().toLowerCase();
+              const exactDateIdx = filtered.findIndex((s) =>
+                typeof s.username === 'string' &&
+                s.username.trim().toLowerCase() === targetUser &&
+                Number(s.wpm) === Number(wpmVal) &&
+                Number(s.accuracy) === Number(accuracyVal) &&
+                String(s.date) === String(payloadDate)
+              );
+
+              if (exactDateIdx >= 0) {
+                placement = exactDateIdx + 1;
+                found = true;
+              } else {
+                const candidates = filtered
+                  .map((s, idx) => ({ s, idx }))
+                  .filter(({ s }) =>
+                    typeof s.username === 'string' &&
+                    s.username.trim().toLowerCase() === targetUser &&
+                    Number(s.wpm) === Number(wpmVal) &&
+                    Number(s.accuracy) === Number(accuracyVal)
+                  );
+
+                if (candidates.length > 0) {
+                  const targetTime = new Date(payloadDate).getTime();
+                  candidates.sort((a, b) => {
+                    const aDiff = Math.abs(new Date(a.s.date).getTime() - targetTime);
+                    const bDiff = Math.abs(new Date(b.s.date).getTime() - targetTime);
+                    return aDiff - bDiff;
+                  });
+                  placement = candidates[0].idx + 1;
                   found = true;
-                  break;
                 }
               }
             }
