@@ -19,12 +19,24 @@ body.light-scheme .navbar, .body.light-scheme .navbar {
 body.light-scheme .nav-link, .body.light-scheme .nav-link {
   color: #181818 !important;
 }
-body.light-scheme .title-menu {
-  color: #0077b6 !important;
+body.light-scheme .title-menu,
+body.light-scheme .nav-link.title-menu {
+  color: rgb(118, 190, 210) !important;
 }
 body.light-scheme .bg-dark {
   background: #e9ecef !important;
   color: #181818 !important;
+}
+body.light-scheme .login.bg-dark,
+body.light-scheme .login {
+  background: #e9ecef !important;
+}
+body.light-scheme .login form {
+  background: #f8f9fa !important;
+  border: 1px solid #d5dbe0 !important;
+  border-radius: 8px;
+  padding: 1.25rem;
+  display: inline-block;
 }
 body.light-scheme .text-light {
   color: #181818 !important;
@@ -37,7 +49,21 @@ body.light-scheme table {
   color: #181818 !important;
 }
 body.light-scheme th {
-  color: #0077b6 !important;
+  color: rgb(118, 190, 210) !important;
+}
+
+body.light-scheme .login .input-group-text,
+body.light-scheme .login .form-control {
+  background: #ffffff !important;
+  color: #181818 !important;
+  border-color: #c9ced6 !important;
+}
+body.light-scheme .login .btn,
+body.light-scheme .login .btn-primary,
+body.light-scheme .login .btn-secondary {
+  background: rgb(118, 190, 210) !important;
+  color: #181818 !important;
+  border-color: rgb(118, 190, 210) !important;
 }
 body.light-scheme tr:nth-child(even) {
   background: #f1f3f4 !important;
@@ -183,6 +209,22 @@ footer button {
 footer a:hover,
 footer button:hover {
   color: rgb(200, 200, 200) !important;
+}
+body.light-scheme footer a {
+  color: rgb(200, 200, 200) !important;
+}
+body.light-scheme footer a:hover {
+  color: #333 !important;
+}
+body.light-scheme footer,
+body.light-scheme footer .text-reset,
+body.light-scheme footer span,
+body.light-scheme footer button {
+  color: #333 !important;
+}
+body.light-scheme footer button:hover {
+  background: #212529 !important;
+  color: #fff !important;
 }
 
 .push-right {

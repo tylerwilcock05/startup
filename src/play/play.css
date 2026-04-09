@@ -153,6 +153,29 @@ input[type="radio"][id="60 sec"]:checked + label[for="60 sec"] {
   border-color: rgb(118, 190, 210);
 }
 
+body.light-scheme .play-page label[for="15 sec"],
+body.light-scheme .play-page label[for="30 sec"],
+body.light-scheme .play-page label[for="60 sec"] {
+  background-color: #f1f3f4;
+  color: #181818;
+  border-color: #c9ced6;
+}
+
+body.light-scheme .play-page label[for="15 sec"]:hover,
+body.light-scheme .play-page label[for="30 sec"]:hover,
+body.light-scheme .play-page label[for="60 sec"]:hover {
+  background-color: #e9ecef;
+  border-color: rgb(118, 190, 210);
+}
+
+body.light-scheme .play-page .typed-text {
+  color: rgb(146, 146, 146);
+}
+
+body.light-scheme .play-page .remaining-text {
+  color: rgb(200, 200, 200);
+}
+
 .time-buttons {
   display: flex;
   justify-content: center;

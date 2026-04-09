@@ -71,6 +71,32 @@ table {
   font-size: 1.1em;
   color: #f8f9fa;
 }
+
+body.light-scheme .my-stats .stats-summary-col {
+  color: #181818;
+}
+
+body.light-scheme .my-stats table {
+  background: #ffffff;
+  color: #181818;
+}
+
+body.light-scheme .my-stats thead {
+  background: #e9ecef;
+}
+
+body.light-scheme .my-stats th,
+body.light-scheme .my-stats td {
+  border-color: #d5dbe0;
+}
+
+body.light-scheme .my-stats tr:nth-child(even) {
+  background: #f1f3f4;
+}
+
+body.light-scheme .my-stats tr:hover {
+  background: #e0e0e0;
+}
 /* Table headers above tables */
 .table-header {
   margin-bottom: 0.5rem;

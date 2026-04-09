@@ -19,6 +19,12 @@ input[type="text"] {
   margin-right: 0.5em;
 }
 
+body.light-scheme .my-friends input[type="text"] {
+  background: #ffffff;
+  color: #181818;
+  border-color: #c9ced6;
+}
+
 button {
   padding: 0.4em 1em;
   border-radius: 4px;
@@ -67,6 +73,28 @@ tr:hover {
   background: #2c2f34;
 }
 
+body.light-scheme .my-friends table {
+  background: #ffffff;
+  color: #181818;
+}
+
+body.light-scheme .my-friends thead {
+  background: #e9ecef;
+}
+
+body.light-scheme .my-friends th,
+body.light-scheme .my-friends td {
+  border-color: #d5dbe0;
+}
+
+body.light-scheme .my-friends tr:nth-child(even) {
+  background: #f1f3f4;
+}
+
+body.light-scheme .my-friends tr:hover {
+  background: #e0e0e0;
+}
+
 /* Smaller, rounded Remove buttons */
 td button {
   padding: 0.2em 0.7em;
@@ -82,4 +110,3 @@ td button:hover {
   background: #fff;
   color: #181818;
 }
-

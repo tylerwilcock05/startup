@@ -50,6 +50,25 @@ input[type="radio"][id="everyone"]:checked + label[for="everyone"] {
 	color: rgb(0, 0, 0);
 	border-color: rgb(118, 190, 210);
 }
+
+body.light-scheme .leaderboard label[for="15 sec"],
+body.light-scheme .leaderboard label[for="30 sec"],
+body.light-scheme .leaderboard label[for="60 sec"],
+body.light-scheme .leaderboard label[for="friends"],
+body.light-scheme .leaderboard label[for="everyone"] {
+	background-color: #f1f3f4;
+	color: #181818;
+	border-color: #c9ced6;
+}
+
+body.light-scheme .leaderboard label[for="15 sec"]:hover,
+body.light-scheme .leaderboard label[for="30 sec"]:hover,
+body.light-scheme .leaderboard label[for="60 sec"]:hover,
+body.light-scheme .leaderboard label[for="friends"]:hover,
+body.light-scheme .leaderboard label[for="everyone"]:hover {
+	background-color: #e9ecef;
+	border-color: rgb(118, 190, 210);
+}
 h2 {
 	margin-top: 1.5rem;
 	color: rgb(118, 190, 210);
@@ -62,6 +81,12 @@ input[type="text"] {
 	background: #23272b;
 	color: #f8f9fa;
 	margin-right: 0.5em;
+}
+
+body.light-scheme .leaderboard input[type="text"] {
+	background: #ffffff;
+	color: #181818;
+	border-color: #c9ced6;
 }
 
 button {
@@ -107,3 +132,24 @@ tr:hover {
 	background: #2c2f34;
 }
 
+body.light-scheme .leaderboard table {
+	background: #ffffff;
+	color: #181818;
+}
+
+body.light-scheme .leaderboard thead {
+	background: #e9ecef;
+}
+
+body.light-scheme .leaderboard th,
+body.light-scheme .leaderboard td {
+	border-color: #d5dbe0;
+}
+
+body.light-scheme .leaderboard tr:nth-child(even) {
+	background: #f1f3f4;
+}
+
+body.light-scheme .leaderboard tr:hover {
+	background: #e0e0e0;
+}
