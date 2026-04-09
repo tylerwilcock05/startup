@@ -118,8 +118,8 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [x] **Backend listens for WebSocket connection** - yep
-- [x] **Frontend makes WebSocket connection** - yep
-- [x] **Data sent over WebSocket connection** - yep
-- [x] **WebSocket data displayed** - yep
-- [x] **Application is fully functional** - yep
+- [x] **Backend listens for WebSocket connection** - backend listens for websocket connection
+- [x] **Frontend makes WebSocket connection** - websocket is connected
+- [x] **Data sent over WebSocket connection** - the messages are received in the server
+- [x] **WebSocket data displayed** - data is visibly displayed in the player messages
+- [x] **Application is fully functional** - yep :)
