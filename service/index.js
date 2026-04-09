@@ -295,7 +295,12 @@ apiRouter.get('/words', async (req, res) => {
 // GetScores (aggregate from user stats)
 apiRouter.get('/scores', verifyAuth, async (req, res) => {
   try {
-    const scores = await DB.getHighScores(200);
+    const duration = Number(req.query?.duration);
+    const limit = Number(req.query?.limit);
+    const hasDuration = Number.isFinite(duration);
+    const scores = hasDuration
+      ? await DB.getHighScoresByDuration(duration, Number.isFinite(limit) ? limit : 10)
+      : await DB.getHighScores(Number.isFinite(limit) ? limit : 200);
     const currentEmail = String(req.user?.email || '').toLowerCase();
     const friendsSet = new Set((req.user?.friends || []).map((f) => String(f).toLowerCase()));
     const decorated = scores.map((score) => {

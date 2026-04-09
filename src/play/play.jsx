@@ -8,6 +8,7 @@ export function Play({ onHideChrome }) {
   const [words, setWords] = useState([]);
   const [wordsLoading, setWordsLoading] = useState(true);
   const [wordsError, setWordsError] = useState('');
+  const [wordsSeed, setWordsSeed] = useState(0);
   const fullText = words.join(' ');
   const isWordsReady = words.length > 0;
   const [typed, setTyped] = useState([]); // array of chars
@@ -26,6 +27,8 @@ export function Play({ onHideChrome }) {
   const statsSavedRef = useRef(false);
   const [lines, setLines] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const [pbWpm, setPbWpm] = useState(false);
+  const [leaderboardMessage, setLeaderboardMessage] = useState('');
   // Player messages from WebSocket and GameNotifier
   const [playerMessages, setPlayerMessages] = useState([]);
   // Prevent page scrollbars while on the Play screen
@@ -185,7 +188,7 @@ export function Play({ onHideChrome }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [wordsSeed]);
 
   useEffect(() => {
     let cancelled = false;
@@ -261,6 +264,17 @@ export function Play({ onHideChrome }) {
 
       if (!statsSavedRef.current) {
         statsSavedRef.current = true;
+        // Check personal best (WPM only) before saving this test
+        fetch('/api/stats', { method: 'get', credentials: 'include' })
+          .then(async (res) => {
+            if (!res.ok) return;
+            const body = await res.json().catch(() => ({ tests: [] }));
+            const tests = Array.isArray(body?.tests) ? body.tests : [];
+            const sameDuration = tests.filter((t) => Number(t.duration) === Number(selectedTime));
+            const bestWpm = sameDuration.length ? Math.max(...sameDuration.map((t) => Number(t.wpm) || 0)) : 0;
+            setPbWpm(wpmVal > bestWpm);
+          })
+          .catch(() => {});
         // Always use the current user's email as username
         const payload = {
           wpm: wpmVal,
@@ -285,11 +299,9 @@ export function Play({ onHideChrome }) {
           // Retry up to 3 times to fetch leaderboard with new score
           let found = false;
           let placement = null;
-          let bestIdx = null;
-          let bestDate = null;
           for (let attempt = 0; attempt < 3 && !found; ++attempt) {
             if (attempt > 0) await new Promise(r => setTimeout(r, 150 * attempt));
-            const scoresRes = await fetch('/api/scores', { method: 'get', credentials: 'include' });
+            const scoresRes = await fetch(`/api/scores?duration=${selectedTime}&limit=10`, { method: 'get', credentials: 'include' });
             if (!scoresRes.ok) {
               console.log(`[Leaderboard Notification] /api/scores fetch failed (attempt ${attempt + 1}):`, scoresRes.status);
               continue;
@@ -307,22 +319,14 @@ export function Play({ onHideChrome }) {
                   Number(s.wpm) === Number(wpmVal) &&
                   Number(s.accuracy) === Number(accuracyVal)
                 ) {
-                  // Pick the score with the oldest date (for leaderboard tie-breaking)
-                  const sDate = new Date(s.date).getTime();
-                  if (bestDate === null || sDate < bestDate) {
-                    bestDate = sDate;
-                    bestIdx = i;
-                  }
+                  placement = Number(s.placement) || (i + 1);
+                  found = true;
+                  break;
                 }
-              }
-              if (bestIdx !== null) {
-                placement = bestIdx + 1;
-                found = true;
               }
             }
           }
           if (placement !== null && placement <= 10) {
-            // Fix off-by-one: add 1 to placement for notification
             function ordinal(n) {
               if (n % 100 >= 11 && n % 100 <= 13) return n + 'th';
               switch (n % 10) {
@@ -332,12 +336,12 @@ export function Play({ onHideChrome }) {
                 default: return n + 'th';
               }
             }
-            if (placement !== 1) {
-              const rank = ordinal(placement - 1);
-            }
+            const rank = ordinal(placement);
+            setLeaderboardMessage(`You scored ${rank} in the global leaderboard!`);
             console.log('[Leaderboard Notification] Sending notification:', { username, rank, wpmVal, selectedTime, placement });
             GameNotifier.notifyLeaderboardScore(username, rank, wpmVal, selectedTime);
           } else {
+            setLeaderboardMessage('');
             // Debug log if notification is skipped
             console.log('[Leaderboard Notification] No matching score found for notification:', {
               username, wpmVal, accuracyVal, selectedTime, placement
@@ -394,23 +398,43 @@ export function Play({ onHideChrome }) {
     }, 0);
   };
 
+  const regenerateWords = () => {
+    setWords([]);
+    setWordsLoading(true);
+    setWordsError('');
+    setWordsSeed((s) => s + 1);
+  };
+
+  const resetTestState = () => {
+    setShowResults(false);
+    setTyped([]);
+    setCursorPos(0);
+    setCorrectCount(0);
+    setIncorrectCount(0);
+    setTotalIncorrect(0);
+    setCountdown(selectedTime);
+    setTimerStarted(false);
+    setTimerActive(true);
+    setWpm(null);
+    setAccuracy(null);
+    setPbWpm(false);
+    setLeaderboardMessage('');
+    statsSavedRef.current = false;
+  };
+
+  const restartWithFade = () => {
+    regenerateWords();
+    resetTestState();
+    setTimeout(() => {
+      if (typingAreaRef.current) typingAreaRef.current.focus();
+    }, 50);
+  };
+
   // Handle key presses
   const handleKeyDown = (e) => {
     if (e.key === 'Tab') {
       e.preventDefault();
-      // Reset all state to restart the typing test without reloading
-      setTyped([]);
-      setCursorPos(0);
-      setCorrectCount(0);
-      setIncorrectCount(0);
-      setTotalIncorrect(0);
-      setCountdown(selectedTime);
-      setTimerStarted(false);
-      setTimerActive(true);
-      // Refocus typing area
-      setTimeout(() => {
-        if (typingAreaRef.current) typingAreaRef.current.focus();
-      }, 0);
+      restartWithFade();
       return;
     }
     if (!timerActive) {
@@ -669,22 +693,7 @@ export function Play({ onHideChrome }) {
 
   // When Tab is pressed to restart, reset all state and hide results
   const handleRestart = () => {
-    setShowResults(false);
-    setTyped([]);
-    setCursorPos(0);
-    setCorrectCount(0);
-    setIncorrectCount(0);
-    setTotalIncorrect(0);
-    setCountdown(selectedTime);
-    setTimerStarted(false);
-    setTimerActive(true);
-    setWpm(null);
-    setAccuracy(null);
-    statsSavedRef.current = false;
-    // Refocus typing area after a short delay to ensure UI is reset
-    setTimeout(() => {
-      if (typingAreaRef.current) typingAreaRef.current.focus();
-    }, 50);
+    restartWithFade();
   };
 
   // Unified keydown handler: handles typing, Tab reset, cursor movement, and notification triggers
@@ -695,21 +704,7 @@ export function Play({ onHideChrome }) {
     // Tab resets the test
     if (e.key === 'Tab') {
       e.preventDefault();
-      setShowResults(false);
-      setTyped([]);
-      setCursorPos(0);
-      setCorrectCount(0);
-      setIncorrectCount(0);
-      setTotalIncorrect(0);
-      setCountdown(selectedTime);
-      setTimerStarted(false);
-      setTimerActive(true);
-      setWpm(null);
-      setAccuracy(null);
-      statsSavedRef.current = false;
-      setTimeout(() => {
-        if (typingAreaRef.current) typingAreaRef.current.focus();
-      }, 50);
+      restartWithFade();
       return;
     }
     // If timer is not active, ignore typing
@@ -857,6 +852,12 @@ export function Play({ onHideChrome }) {
           <p className="results" style={{ fontSize: '2em', margin: '-1em 0 0 0', color: '#888' }}>
             Accuracy: <span style={{ color: 'rgb(118, 190, 210)' }}>{accuracy}%</span>
           </p>
+          {pbWpm && (
+            <p className="results pb-badge">New PB!</p>
+          )}
+          {leaderboardMessage && (
+            <p className="results leaderboard-result">{leaderboardMessage}</p>
+          )}
           <p className="restart" style={{ textAlign: 'center', fontSize: '1.2em', marginTop: '2em' }}>Press Tab to restart</p>
         </div>
       )}

@@ -182,7 +182,6 @@ input[type="radio"][id="60 sec"]:checked + label[for="60 sec"] {
 }
 
 
-
 .cursor {
   display: inline-block;
   width: 0ch;
@@ -239,6 +238,21 @@ input[type="radio"][id="60 sec"]:checked + label[for="60 sec"] {
     padding-top: 1rem;
     color: rgb(118, 190, 210);
     font-size: 1.2em;
+}
+
+.pb-badge {
+  margin-top: -0.4em;
+  color: rgb(118, 190, 210);
+  font-weight: 600;
+  font-size: 1.1em;
+  padding-top: 0.4rem;
+}
+
+.leaderboard-result {
+  margin-top: -0.4em;
+  color: rgb(118, 190, 210);
+  font-size: 1.1em;
+  padding-top: 0.4rem;
 }
 
 /* Results row styling */

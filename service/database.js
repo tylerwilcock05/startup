@@ -68,6 +68,26 @@ async function getHighScores(limit = 10) {
   }));
 }
 
+async function getHighScoresByDuration(duration, limit = 10) {
+  const durationValue = Number(duration);
+  const query = { wpm: { $gt: 0 }, duration: durationValue };
+  const options = {
+    sort: { wpm: -1, accuracy: -1, date: 1 },
+    limit: Math.max(1, Math.min(Number(limit) || 10, 500)),
+    projection: { _id: 0, wpm: 1, accuracy: 1, duration: 1, username: 1, name: 1, date: 1 },
+  };
+  const cursor = scoreCollection.find(query, options);
+  const scores = await cursor.toArray();
+  return scores.map((score, idx) => ({
+    placement: idx + 1,
+    wpm: score.wpm,
+    accuracy: score.accuracy,
+    duration: score.duration,
+    date: score.date,
+    username: score.username || score.name || 'Anonymous',
+  }));
+}
+
 module.exports = {
   getUser,
   getUserByToken,
@@ -75,4 +95,5 @@ module.exports = {
   updateUser,
   addScore,
   getHighScores,
+  getHighScoresByDuration,
 };
